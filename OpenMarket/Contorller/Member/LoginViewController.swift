@@ -11,7 +11,7 @@ import SnapKit
 // MARK: - Preview
 #if canImport(SwiftUI) && DEBUG
 import SwiftUI
-struct ViewController_Preview: PreviewProvider {
+struct LoginViewController_Preview: PreviewProvider {
     static var previews: some View {
         LoginViewController().toPreview()
     }
@@ -75,8 +75,14 @@ class LoginViewController: UIViewController {
         btn.setTitle("회원가입", for: .normal)
         btn.setTitleColor(.black, for: .normal)
         //btn.backgroundColor = .systemBlue
+        btn.addTarget(self, action: #selector(showSignInVC), for: .touchUpInside)
         return btn
     }()
+    
+    @objc func showSignInVC() {
+        let vc = SignInViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
     
     let entireStackView: UIStackView = {
         let sv = UIStackView()
@@ -110,10 +116,24 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.addSubview(idTextfield)
+        setUI()
+        setNavigationBar()
         setStackView()
         setConstraints()
-        
+    }
+    
+    private func setUI() {
+        self.view.backgroundColor = .white
+    }
+    
+    private func setNavigationBar() {
+        // 네비게이션 설정관련
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
     
     private func setStackView() {
@@ -138,6 +158,7 @@ class LoginViewController: UIViewController {
         entireStackView.snp.makeConstraints { make in
             make.center.equalTo(self.view)
             make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(60)
+            make.width.equalTo(70)
         }
         
         idTextfield.snp.makeConstraints { make in
@@ -151,18 +172,6 @@ class LoginViewController: UIViewController {
         
         loginBtn.snp.makeConstraints { make in
             make.height.equalTo(45)
-        }
-        
-        findIDBtn.snp.makeConstraints { make in
-            make.width.equalTo(70)
-        }
-        
-        findPWBtn.snp.makeConstraints { make in
-            make.width.equalTo(70)
-        }
-        
-        signInBtn.snp.makeConstraints { make in
-            make.width.equalTo(75)
         }
         
         divideLabel.snp.makeConstraints { make in
