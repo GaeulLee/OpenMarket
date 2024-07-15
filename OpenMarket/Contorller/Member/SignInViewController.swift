@@ -21,8 +21,19 @@ struct SignInViewController_Preview: PreviewProvider {
 class SignInViewController: UIViewController {
 
     // MARK: - UI Components
-    let idTextfield: UITextField = {
+    lazy var idTextfield: UITextField = {
         let tf = UITextField()
+//        let border = CALayer()
+//        let width = CGFloat(1)
+//        border.borderColor = CGColor.init(red: 0, green: 0, blue: 0, alpha: 50)
+//        border.frame = CGRect(x: 0, y: tf.frame.size.height, width: <#T##Int#>, height: <#T##Int#>)
+        tf.borderStyle = .none
+        let border = CALayer()
+        border.frame = CGRect(x: 0, y: tf.frame.size.height-1, width: tf.frame.width, height: 1)
+        border.backgroundColor = UIColor.black.cgColor
+        tf.layer.addSublayer(border)
+        tf.textAlignment = .left
+        tf.textColor = UIColor.white
         tf.placeholder = "ID"
         tf.borderStyle = .roundedRect
         tf.clearButtonMode = .always
@@ -81,7 +92,7 @@ class SignInViewController: UIViewController {
         sv.axis = .vertical
         sv.alignment = .fill
         sv.distribution = .fill
-        sv.spacing = 20
+        sv.spacing = 10
         return sv
     }()
     
@@ -107,15 +118,15 @@ class SignInViewController: UIViewController {
         entireStackView.addArrangedSubview(nameTextfield)
         entireStackView.addArrangedSubview(nickNameTextfield)
         entireStackView.addArrangedSubview(emailTextfield)
-        entireStackView.addArrangedSubview(loginBtn)
-
+        
+        self.view.addSubview(loginBtn)
     }
     
     private func setConstraints() {
         entireStackView.snp.makeConstraints { make in
             make.centerX.equalTo(self.view)
             make.top.equalTo(self.view.safeAreaLayoutGuide).inset(10)
-            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(60)
+            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(50)
         }
         
         idTextfield.snp.makeConstraints { make in
@@ -124,30 +135,28 @@ class SignInViewController: UIViewController {
         
         pwTextfield.snp.makeConstraints { make in
             make.height.equalTo(40)
-            make.top.equalTo(idTextfield.snp.bottom).offset(10)
         }
         
         pwCheckTextfield.snp.makeConstraints { make in
             make.height.equalTo(40)
-            make.top.equalTo(pwTextfield.snp.bottom).offset(10)
         }
         
         nameTextfield.snp.makeConstraints { make in
             make.height.equalTo(40)
-            make.top.equalTo(pwCheckTextfield.snp.bottom).offset(10)
         }
         
         nickNameTextfield.snp.makeConstraints { make in
             make.height.equalTo(40)
-            make.top.equalTo(nameTextfield.snp.bottom).offset(10)
         }
         
         emailTextfield.snp.makeConstraints { make in
             make.height.equalTo(40)
-            make.top.equalTo(nickNameTextfield.snp.bottom).offset(10)
         }
         
         loginBtn.snp.makeConstraints { make in
+            make.centerX.equalTo(self.view)
+            make.top.equalTo(entireStackView.snp.bottom).inset(-20)
+            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(50)
             make.height.equalTo(45)
         }
     }
