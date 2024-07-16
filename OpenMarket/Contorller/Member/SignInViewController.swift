@@ -21,73 +21,100 @@ struct SignInViewController_Preview: PreviewProvider {
 class SignInViewController: UIViewController {
 
     // MARK: - UI Components
-    lazy var idTextfield: UITextField = {
+    private let idTextfield: UITextField = {
         let tf = UITextField()
-//        let border = CALayer()
-//        let width = CGFloat(1)
-//        border.borderColor = CGColor.init(red: 0, green: 0, blue: 0, alpha: 50)
-//        border.frame = CGRect(x: 0, y: tf.frame.size.height, width: <#T##Int#>, height: <#T##Int#>)
-        tf.borderStyle = .none
-        let border = CALayer()
-        border.frame = CGRect(x: 0, y: tf.frame.size.height-1, width: tf.frame.width, height: 1)
-        border.backgroundColor = UIColor.black.cgColor
-        tf.layer.addSublayer(border)
-        tf.textAlignment = .left
-        tf.textColor = UIColor.white
-        tf.placeholder = "ID"
+        tf.placeholder = "Enter ID"
         tf.borderStyle = .roundedRect
-        tf.clearButtonMode = .always
+        tf.backgroundColor = .tfColor
+        tf.textColor = .lightGray
+        tf.tintColor = .lightGray
+        tf.autocapitalizationType = .none // 첫글자 대문자 설정 X
+        tf.autocorrectionType = .no // 자동 수정 설정 X
+        tf.spellCheckingType = .no // 맞춤법 검사 설정 X
         return tf
     }()
     
-    let pwTextfield: UITextField = {
+    private let pwTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "PW"
+        tf.placeholder = "Enter Password"
         tf.borderStyle = .roundedRect
-        tf.clearButtonMode = .always
+        tf.backgroundColor = .tfColor
+        tf.textColor = .lightGray
+        tf.tintColor = .lightGray
+        tf.autocapitalizationType = .none
+        tf.autocorrectionType = .no
+        tf.spellCheckingType = .no
+        tf.isSecureTextEntry = true
         return tf
     }()
     
-    let pwCheckTextfield: UITextField = {
+    private let pwCheckTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "PW Check"
+        tf.placeholder = "Check Password"
         tf.borderStyle = .roundedRect
-        tf.clearButtonMode = .always
-        return tf
-    }()
-    let nameTextfield: UITextField = {
-        let tf = UITextField()
-        tf.placeholder = "Name"
-        tf.borderStyle = .roundedRect
-        tf.clearButtonMode = .always
-        return tf
-    }()
-    let nickNameTextfield: UITextField = {
-        let tf = UITextField()
-        tf.placeholder = "Nickname"
-        tf.borderStyle = .roundedRect
-        tf.clearButtonMode = .always
-        return tf
-    }()
-    let emailTextfield: UITextField = {
-        let tf = UITextField()
-        tf.placeholder = "Email"
-        tf.borderStyle = .roundedRect
-        tf.clearButtonMode = .always
+        tf.backgroundColor = .tfColor
+        tf.textColor = .lightGray
+        tf.tintColor = .lightGray
+        tf.autocapitalizationType = .none
+        tf.autocorrectionType = .no
+        tf.spellCheckingType = .no
+        tf.isSecureTextEntry = true
         return tf
     }()
     
-    let loginBtn: UIButton = {
+    private let nameTextfield: UITextField = {
+        let tf = UITextField()
+        tf.placeholder = "Enter Name"
+        tf.borderStyle = .roundedRect
+        tf.backgroundColor = .tfColor
+        tf.textColor = .lightGray
+        tf.tintColor = .lightGray
+        tf.autocapitalizationType = .none
+        tf.autocorrectionType = .no
+        tf.spellCheckingType = .no
+        return tf
+    }()
+    
+    private let nickNameTextfield: UITextField = {
+        let tf = UITextField()
+        tf.placeholder = "Enter Nickname"
+        tf.borderStyle = .roundedRect
+        tf.backgroundColor = .tfColor
+        tf.textColor = .lightGray
+        tf.tintColor = .lightGray
+        tf.autocapitalizationType = .none
+        tf.autocorrectionType = .no
+        tf.spellCheckingType = .no
+        return tf
+    }()
+    
+    private let emailTextfield: UITextField = {
+        let tf = UITextField()
+        tf.placeholder = "Enter Email"
+        tf.borderStyle = .roundedRect
+        tf.backgroundColor = .tfColor
+        tf.textColor = .lightGray
+        tf.tintColor = .lightGray
+        tf.autocapitalizationType = .none
+        tf.autocorrectionType = .no
+        tf.spellCheckingType = .no
+        tf.keyboardType = .emailAddress
+        return tf
+    }()
+    
+    private let joinBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("JOIN", for: .normal)
-        btn.setTitleColor(.black, for: .normal)
-        btn.backgroundColor = .systemBlue
+        btn.setTitleColor(.systemBackground, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        btn.backgroundColor = .btnColor
         btn.layer.masksToBounds = true
-        btn.layer.cornerRadius = 10
+        btn.layer.cornerRadius = 7
+        btn.addTarget(self, action: #selector(joinBtnTapped), for: .touchUpInside)
         return btn
     }()
     
-    let entireStackView: UIStackView = {
+    private let entireStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .vertical
         sv.alignment = .fill
@@ -97,6 +124,13 @@ class SignInViewController: UIViewController {
     }()
     
     
+    // MARK: - objc
+    @objc private func joinBtnTapped() {
+        print("joinBtnTapped")
+    }
+
+    
+    // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -105,21 +139,27 @@ class SignInViewController: UIViewController {
         setConstraints()
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+        self.view.endEditing(true)
+    }
+    
+    // MARK: - private
     private func setUI() {
-        self.view.backgroundColor = .white
-        self.title = "Sign In"
+        self.view.backgroundColor = .systemBackground
+        self.title = "회원가입"
     }
 
     private func setStackView() {
         self.view.addSubview(entireStackView)
         entireStackView.addArrangedSubview(idTextfield)
+        entireStackView.addArrangedSubview(emailTextfield)
         entireStackView.addArrangedSubview(pwTextfield)
         entireStackView.addArrangedSubview(pwCheckTextfield)
         entireStackView.addArrangedSubview(nameTextfield)
         entireStackView.addArrangedSubview(nickNameTextfield)
-        entireStackView.addArrangedSubview(emailTextfield)
+
         
-        self.view.addSubview(loginBtn)
+        self.view.addSubview(joinBtn)
     }
     
     private func setConstraints() {
@@ -130,34 +170,34 @@ class SignInViewController: UIViewController {
         }
         
         idTextfield.snp.makeConstraints { make in
-            make.height.equalTo(40)
+            make.height.equalTo(45)
         }
         
         pwTextfield.snp.makeConstraints { make in
-            make.height.equalTo(40)
+            make.height.equalTo(45)
         }
         
         pwCheckTextfield.snp.makeConstraints { make in
-            make.height.equalTo(40)
+            make.height.equalTo(45)
         }
         
         nameTextfield.snp.makeConstraints { make in
-            make.height.equalTo(40)
+            make.height.equalTo(45)
         }
         
         nickNameTextfield.snp.makeConstraints { make in
-            make.height.equalTo(40)
+            make.height.equalTo(45)
         }
         
         emailTextfield.snp.makeConstraints { make in
-            make.height.equalTo(40)
+            make.height.equalTo(48)
         }
         
-        loginBtn.snp.makeConstraints { make in
+        joinBtn.snp.makeConstraints { make in
             make.centerX.equalTo(self.view)
             make.top.equalTo(entireStackView.snp.bottom).inset(-20)
             make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(50)
-            make.height.equalTo(45)
+            make.height.equalTo(48)
         }
     }
 

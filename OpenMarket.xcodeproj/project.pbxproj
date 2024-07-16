@@ -23,6 +23,8 @@
 		9B3CF1012C3D531A00629B5D /* CreateItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1002C3D531A00629B5D /* CreateItemViewController.swift */; };
 		9B3CF1032C3D533A00629B5D /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1022C3D533A00629B5D /* MyPageViewController.swift */; };
 		9B3CF1072C3D5B1000629B5D /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1062C3D5B1000629B5D /* UIViewController+Extension.swift */; };
+		9B3CF10A2C468E1500629B5D /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1092C468E1500629B5D /* UIColor+Extension.swift */; };
+		9B3CF10C2C468E3200629B5D /* K.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF10B2C468E3200629B5D /* K.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +47,8 @@
 		9B3CF1002C3D531A00629B5D /* CreateItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateItemViewController.swift; sourceTree = "<group>"; };
 		9B3CF1022C3D533A00629B5D /* MyPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
 		9B3CF1062C3D5B1000629B5D /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
+		9B3CF1092C468E1500629B5D /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
+		9B3CF10B2C468E3200629B5D /* K.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = K.swift; sourceTree = "<group>"; };
 		ABEF94E4DE58C07482EF1C2B /* libPods-OpenMarket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OpenMarket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -100,6 +104,7 @@
 			children = (
 				9B3CF0DD2C3BFC0F00629B5D /* AppDelegate.swift */,
 				9B3CF0DF2C3BFC0F00629B5D /* SceneDelegate.swift */,
+				9B3CF1082C468DFF00629B5D /* Helper */,
 				9B3CF0F22C3D513800629B5D /* Model */,
 				9B3CF0F32C3D514300629B5D /* View */,
 				9B3CF0F12C3D512D00629B5D /* Contorller */,
@@ -156,6 +161,15 @@
 				9B3CF0FA2C3D529000629B5D /* ModifyPWViewController.swift */,
 			);
 			path = Member;
+			sourceTree = "<group>";
+		};
+		9B3CF1082C468DFF00629B5D /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				9B3CF1092C468E1500629B5D /* UIColor+Extension.swift */,
+				9B3CF10B2C468E3200629B5D /* K.swift */,
+			);
+			path = Helper;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -274,6 +288,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B3CF1072C3D5B1000629B5D /* UIViewController+Extension.swift in Sources */,
+				9B3CF10C2C468E3200629B5D /* K.swift in Sources */,
 				9B3CF0F92C3D527E00629B5D /* FindPWViewController.swift in Sources */,
 				9B3CF0FB2C3D529000629B5D /* ModifyPWViewController.swift in Sources */,
 				9B3CF0F52C3D526200629B5D /* SignInViewController.swift in Sources */,
@@ -283,6 +298,7 @@
 				9B3CF1032C3D533A00629B5D /* MyPageViewController.swift in Sources */,
 				9B3CF0FF2C3D52EA00629B5D /* ItemDetailViewController.swift in Sources */,
 				9B3CF0DE2C3BFC0F00629B5D /* AppDelegate.swift in Sources */,
+				9B3CF10A2C468E1500629B5D /* UIColor+Extension.swift in Sources */,
 				9B3CF0E02C3BFC0F00629B5D /* SceneDelegate.swift in Sources */,
 				9B3CF0F72C3D527000629B5D /* FindIDViewController.swift in Sources */,
 			);

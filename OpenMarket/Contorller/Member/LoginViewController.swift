@@ -18,13 +18,14 @@ struct LoginViewController_Preview: PreviewProvider {
 }
 #endif
 
+
 class LoginViewController: UIViewController {
     // MARK: - UI Components
+    
     // ID
-    private var idTextfieldView: UIView = {
+    private let idTextfieldView: UIView = {
         let view = UIView()
-        //view.frame.size.height = 48
-        view.backgroundColor = UIColor.darkGray
+        view.backgroundColor = UIColor.tfColor
         view.layer.cornerRadius = 7
         view.clipsToBounds = true
         return view
@@ -33,16 +34,16 @@ class LoginViewController: UIViewController {
     private var idLabel: UILabel = {
         let label = UILabel()
         label.text = "Enter ID"
-        label.font = .systemFont(ofSize: 18)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textColor = .lightGray
         return label
     }()
     
-    private var idTextfield: UITextField = {
+    private let idTextfield: UITextField = {
         var tf = UITextField()
         tf.backgroundColor = .clear
-        tf.textColor = .white
-        tf.tintColor = .white
+        tf.textColor = .lightGray
+        tf.tintColor = .lightGray
         tf.autocapitalizationType = .none // 첫글자 대문자 설정 X
         tf.autocorrectionType = .no // 자동 수정 설정 X
         tf.spellCheckingType = .no // 맞춤법 검사 설정 X
@@ -51,28 +52,27 @@ class LoginViewController: UIViewController {
     
 
     // PW
-    private var pwTextfieldView: UIView = {
+    private let pwTextfieldView: UIView = {
         let view = UIView()
-        //view.frame.size.height = 48
-        view.backgroundColor = UIColor.darkGray
+        view.backgroundColor = UIColor.tfColor
         view.layer.cornerRadius = 7
         view.clipsToBounds = true
         return view
     }()
     
-    let pwLabel: UILabel = {
+    private var pwLabel: UILabel = {
         let label = UILabel()
         label.text = "Enter Password"
-        label.font = .systemFont(ofSize: 18)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textColor = .lightGray
         return label
     }()
     
-    private var pwTextfield: UITextField = {
+    private let pwTextfield: UITextField = {
         var tf = UITextField()
         tf.backgroundColor = .clear
-        tf.textColor = .white
-        tf.tintColor = .white
+        tf.textColor = .lightGray
+        tf.tintColor = .lightGray
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.spellCheckingType = .no
@@ -84,71 +84,59 @@ class LoginViewController: UIViewController {
         let btn = UIButton(type: .custom)
         btn.setTitle("Show", for: .normal)
         btn.setTitleColor(UIColor.lightGray, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .light)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         btn.addTarget(self, action: #selector(pwShowModeSetting), for: .touchUpInside)
         return btn
     }()
-    @objc func pwShowModeSetting() {
-        pwTextfield.isSecureTextEntry.toggle()
-    }
     
-    
-    let loginBtn: UIButton = {
+    private let loginBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("LOGIN", for: .normal)
-        btn.setTitleColor(.black, for: .normal)
-        btn.backgroundColor = .systemBlue
+        btn.setTitleColor(.systemBackground, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        btn.backgroundColor = .btnColor
         btn.layer.masksToBounds = true
         btn.layer.cornerRadius = 7
         btn.addTarget(self, action: #selector(loginBtnTapped), for: .touchUpInside)
         return btn
     }()
-    @objc func loginBtnTapped() {
-        print("loginBtn clicked")
-//        let vc = SignInViewController()
-//        navigationController?.pushViewController(vc, animated: true)
-    }
     
-    let findIDBtn: UIButton = {
+    private let findIDBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("ID 찾기", for: .normal)
-        btn.setTitleColor(.black, for: .normal)
-        btn.layer.masksToBounds = true
-        //btn.backgroundColor = .systemBlue
-        //btn.addTarget(self, action: #selector(showSignInVC), for: .touchUpInside)
+        btn.setTitleColor(.darkGray, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        btn.addTarget(self, action: #selector(findIDBtnTapped), for: .touchUpInside)
         return btn
     }()
     
-    let divideLabel: UILabel = {
+    private let findPWBtn: UIButton = {
+        let btn = UIButton()
+        btn.setTitle(" PW 찾기", for: .normal)
+        btn.setTitleColor(.darkGray, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        btn.addTarget(self, action: #selector(findPWBtnTapped), for: .touchUpInside)
+        return btn
+    }()
+
+    private let divideLabel: UILabel = {
         let label = UILabel()
         label.text = "|"
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.textColor = .darkGray
         return label
     }()
     
-    let findPWBtn: UIButton = {
-        let btn = UIButton()
-        btn.setTitle(" PW 찾기", for: .normal)
-        btn.setTitleColor(.black, for: .normal)
-        //btn.backgroundColor = .systemBlue
-        //btn.addTarget(self, action: #selector(showSignInVC), for: .touchUpInside)
-        return btn
-    }()
-    
-    lazy var signInBtn: UIButton = {
+    private let signInBtn: UIButton = {
         let btn = UIButton()
         btn.setTitle("회원가입", for: .normal)
-        btn.setTitleColor(.black, for: .normal)
-        //btn.backgroundColor = .systemBlue
-        btn.addTarget(self, action: #selector(showSignInVC), for: .touchUpInside)
+        btn.setTitleColor(.darkGray, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        btn.addTarget(self, action: #selector(signInBtnTapped), for: .touchUpInside)
         return btn
     }()
-    @objc func showSignInVC() {
-        print("signInBtn clicked")
-        let vc = SignInViewController()
-        navigationController?.pushViewController(vc, animated: true)
-    }
     
-    let entireStackView: UIStackView = {
+    private let entireStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .vertical
         sv.alignment = .fill
@@ -157,13 +145,41 @@ class LoginViewController: UIViewController {
         return sv
     }()
     
-    let bottomLineView: UIView = {
-        let sv = UIStackView()
-        sv.isUserInteractionEnabled = true
-        return sv
+    private let bottomLineView: UIView = {
+        let view = UIView()
+        return view
     }()
     
     
+    // MARK: - objc
+    @objc func pwShowModeSetting() {
+        pwTextfield.isSecureTextEntry.toggle()
+    }
+    
+    @objc func loginBtnTapped() {
+        print("loginBtn clicked")
+    }
+    
+    @objc func findIDBtnTapped() {
+        print("findIDBtn clicked")
+        let vc = FindIDViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @objc func findPWBtnTapped() {
+        print("findPWBtn clicked")
+        let vc = FindPWViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @objc func signInBtnTapped() {
+        print("signInBtn clicked")
+        let vc = SignInViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    
+
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -181,7 +197,8 @@ class LoginViewController: UIViewController {
     
     // MARK: - private
     private func setUI() {
-        self.view.backgroundColor = .white
+        self.title = ""
+        self.view.backgroundColor = .systemBackground
         
         idTextfield.delegate = self
         pwTextfield.delegate = self
@@ -191,7 +208,7 @@ class LoginViewController: UIViewController {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = .clear
-        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.tintColor = .defaultFontColor
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
@@ -204,16 +221,16 @@ class LoginViewController: UIViewController {
         pwTextfieldView.addSubview(pwTextfield)
         pwTextfieldView.addSubview(pwShowBtn)
         
-        self.view.addSubview(entireStackView)
-        entireStackView.addArrangedSubview(idTextfieldView)
-        entireStackView.addArrangedSubview(pwTextfieldView)
-        entireStackView.addArrangedSubview(loginBtn)
-        
-        self.view.addSubview(bottomLineView)
         bottomLineView.addSubview(findIDBtn)
         bottomLineView.addSubview(divideLabel)
         bottomLineView.addSubview(findPWBtn)
         bottomLineView.addSubview(signInBtn)
+        
+        self.view.addSubview(entireStackView)
+        entireStackView.addArrangedSubview(idTextfieldView)
+        entireStackView.addArrangedSubview(pwTextfieldView)
+        entireStackView.addArrangedSubview(loginBtn)
+        entireStackView.addArrangedSubview(bottomLineView)
     }
     
     private func setConstraints() {
@@ -254,39 +271,38 @@ class LoginViewController: UIViewController {
             make.right.equalTo(pwTextfield.snp.right)
             make.top.equalTo(pwTextfield.snp.top).inset(-4)
         }
-
+        
+        
         // loginBtn
         loginBtn.snp.makeConstraints { make in
             make.height.equalTo(48)
         }
+
         
         // bottomLineView
         bottomLineView.snp.makeConstraints { make in
-            make.centerX.equalTo(self.view)
-            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(50)
-            make.top.equalTo(entireStackView.snp.bottom).inset(-12)
+            make.height.equalTo(35)
         }
-        
         findIDBtn.snp.makeConstraints { make in
             make.width.equalTo(70)
             make.left.equalTo(bottomLineView.snp.left)
         }
         divideLabel.snp.makeConstraints { make in
             make.width.equalTo(5)
-            make.left.equalTo(findIDBtn.snp.right)
+            make.left.equalTo(findIDBtn.snp.right).inset(3)
             make.top.equalTo(bottomLineView.snp.top).inset(5)
         }
         findPWBtn.snp.makeConstraints { make in
             make.width.equalTo(70)
-            make.left.equalTo(divideLabel.snp.right).inset(-3)
+            make.left.equalTo(divideLabel.snp.right)
         }
         signInBtn.snp.makeConstraints { make in
             make.width.equalTo(70)
             make.right.equalTo(bottomLineView.snp.right).inset(4)
         }
-        
     }
 }
+
 
 // MARK: - UITextFieldDelegate
 extension LoginViewController: UITextFieldDelegate {
@@ -298,7 +314,7 @@ extension LoginViewController: UITextFieldDelegate {
                 make.top.equalTo(textField.snp.top).inset(-12)
             }
             UIView.animate(withDuration: 0.3) {
-                self.idLabel.font = .systemFont(ofSize: 15)
+                self.idLabel.font = .systemFont(ofSize: 14, weight: .bold)
                 self.idLabel.superview?.layoutIfNeeded()
             }
         }
@@ -308,7 +324,7 @@ extension LoginViewController: UITextFieldDelegate {
                 make.top.equalTo(textField).offset(-12)
             }
             UIView.animate(withDuration: 0.3) {
-                self.pwLabel.font = .systemFont(ofSize: 15)
+                self.pwLabel.font = .systemFont(ofSize: 14, weight: .bold)
                 self.pwLabel.superview?.layoutIfNeeded()
             }
         }
@@ -322,7 +338,7 @@ extension LoginViewController: UITextFieldDelegate {
                 make.top.equalTo(textField.snp.top)
             }
             UIView.animate(withDuration: 0.3) {
-                self.idLabel.font = .systemFont(ofSize: 18)
+                self.idLabel.font = .systemFont(ofSize: 16, weight: .bold)
                 self.idLabel.superview?.layoutIfNeeded()
             }
         }
@@ -332,7 +348,7 @@ extension LoginViewController: UITextFieldDelegate {
                 make.top.equalTo(textField.snp.top)
             }
             UIView.animate(withDuration: 0.3) {
-                self.pwLabel.font = .systemFont(ofSize: 18)
+                self.pwLabel.font = .systemFont(ofSize: 16, weight: .bold)
                 self.pwLabel.superview?.layoutIfNeeded()
             }
         }
