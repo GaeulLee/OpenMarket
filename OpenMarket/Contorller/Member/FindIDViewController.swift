@@ -128,6 +128,4 @@ class FindIDViewController: UIViewController {
             make.height.equalTo(48)
         }
     }
-
-
 }

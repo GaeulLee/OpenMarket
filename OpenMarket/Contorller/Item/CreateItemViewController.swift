@@ -12,9 +12,13 @@ class CreateItemViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        setUI()
     }
     
+    private func setUI() {
+        self.title = ""
+        self.view.backgroundColor = .systemBackground
+    }
 
     /*
     // MARK: - Navigation

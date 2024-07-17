@@ -9,4 +9,5 @@ import Foundation
 
 struct K {
     // static
+    static let cellIdentifier = "ItemCell"
 }
