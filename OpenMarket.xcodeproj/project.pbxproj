@@ -26,6 +26,7 @@
 		9B3CF10A2C468E1500629B5D /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1092C468E1500629B5D /* UIColor+Extension.swift */; };
 		9B3CF10C2C468E3200629B5D /* K.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF10B2C468E3200629B5D /* K.swift */; };
 		9B3CF10F2C47E09400629B5D /* ItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF10D2C47E09400629B5D /* ItemTableViewCell.swift */; };
+		9B3CF1122C49354300629B5D /* ItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1112C49354300629B5D /* ItemCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,7 @@
 		9B3CF1092C468E1500629B5D /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		9B3CF10B2C468E3200629B5D /* K.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = K.swift; sourceTree = "<group>"; };
 		9B3CF10D2C47E09400629B5D /* ItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTableViewCell.swift; sourceTree = "<group>"; };
+		9B3CF1112C49354300629B5D /* ItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCollectionViewCell.swift; sourceTree = "<group>"; };
 		ABEF94E4DE58C07482EF1C2B /* libPods-OpenMarket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OpenMarket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -140,6 +142,7 @@
 				9B3CF0E32C3BFC0F00629B5D /* Main.storyboard */,
 				9B3CF0E82C3BFC1000629B5D /* LaunchScreen.storyboard */,
 				9B3CF10D2C47E09400629B5D /* ItemTableViewCell.swift */,
+				9B3CF1112C49354300629B5D /* ItemCollectionViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -303,6 +306,7 @@
 				9B3CF0FF2C3D52EA00629B5D /* ItemDetailViewController.swift in Sources */,
 				9B3CF0DE2C3BFC0F00629B5D /* AppDelegate.swift in Sources */,
 				9B3CF10A2C468E1500629B5D /* UIColor+Extension.swift in Sources */,
+				9B3CF1122C49354300629B5D /* ItemCollectionViewCell.swift in Sources */,
 				9B3CF0E02C3BFC0F00629B5D /* SceneDelegate.swift in Sources */,
 				9B3CF0F72C3D527000629B5D /* FindIDViewController.swift in Sources */,
 			);

@@ -9,21 +9,47 @@ import UIKit
 
 class MyPageViewController: UIViewController {
 
+    private var logOutBtn: UIButton = {
+        let btn = UIButton()
+        btn.setTitle("LOGIN", for: .normal)
+        btn.setTitleColor(.systemBackground, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        btn.backgroundColor = .btnColor
+        btn.layer.masksToBounds = true
+        btn.layer.cornerRadius = 7
+        btn.addTarget(self, action: #selector(logOutBtnTapped), for: .touchUpInside)
+        return btn
+    }()
+    
+    @objc private func logOutBtnTapped() {
+        print("logOutBtnTapped")
+
+        dismiss(animated: true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        setUI()
+        setAddSubview()
+        setConstraints()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    private func setUI() {
+        self.title = "My Page"
+        self.view.backgroundColor = .systemBackground
     }
-    */
+
+    private func setAddSubview() {
+        self.view.addSubview(logOutBtn)
+
+    }
+    
+    private func setConstraints() {
+        logOutBtn.snp.makeConstraints {
+            $0.center.equalTo(self.view)
+        }
+    }
+
 
 }

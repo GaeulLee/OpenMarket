@@ -9,5 +9,6 @@ import Foundation
 
 struct K {
     // static
-    static let cellIdentifier = "ItemCell"
+    static let tableViewCellID = "ItemTableViewCell"
+    static let collectionViewCellID = "ItemCollectionViewCell"
 }
