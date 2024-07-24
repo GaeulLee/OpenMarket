@@ -22,14 +22,14 @@ class ItemCollectionViewCell: UICollectionViewCell {
 //        return imageView
 //    }()
     
-    private let pNameLabel: UILabel = {
+    private let iNameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
         label.textColor = .defaultFontColor
         return label
     }()
     
-    private let pPriceLabel: UILabel = {
+    private let priceLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textColor = .defaultFontColor
@@ -51,10 +51,10 @@ class ItemCollectionViewCell: UICollectionViewCell {
     }()
     
     
-    public func setupCell(item: String) {
+    public func setupCell(item: Item) {
         // cell 세팅(데이터,화면 등)
-        pNameLabel.text = item
-        pPriceLabel.text = "100,000원"
+        iNameLabel.text = item.itemName
+        priceLabel.text = item.itemPrice
         
         setupLayout()
     }
@@ -63,19 +63,19 @@ class ItemCollectionViewCell: UICollectionViewCell {
 
 private extension ItemCollectionViewCell {
     func setupLayout() {
-        labelUIView.addSubview(pNameLabel)
-        labelUIView.addSubview(pPriceLabel)
+        labelUIView.addSubview(iNameLabel)
+        labelUIView.addSubview(priceLabel)
         
         self.addSubview(stackView)
         stackView.addArrangedSubview(testView)
         stackView.addArrangedSubview(labelUIView)
         
         
-        pNameLabel.snp.makeConstraints { make in
+        iNameLabel.snp.makeConstraints { make in
             make.top.equalTo(labelUIView.snp.top).inset(3)
         }
         
-        pPriceLabel.snp.makeConstraints { make in
+        priceLabel.snp.makeConstraints { make in
             make.bottom.equalTo(labelUIView.snp.bottom).inset(3)
         }
         

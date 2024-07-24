@@ -27,6 +27,8 @@
 		9B3CF10C2C468E3200629B5D /* K.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF10B2C468E3200629B5D /* K.swift */; };
 		9B3CF10F2C47E09400629B5D /* ItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF10D2C47E09400629B5D /* ItemTableViewCell.swift */; };
 		9B3CF1122C49354300629B5D /* ItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1112C49354300629B5D /* ItemCollectionViewCell.swift */; };
+		9B3CF1142C5116CF00629B5D /* Member.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1132C5116CF00629B5D /* Member.swift */; };
+		9B3CF1162C5116DD00629B5D /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1152C5116DD00629B5D /* Item.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +55,8 @@
 		9B3CF10B2C468E3200629B5D /* K.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = K.swift; sourceTree = "<group>"; };
 		9B3CF10D2C47E09400629B5D /* ItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTableViewCell.swift; sourceTree = "<group>"; };
 		9B3CF1112C49354300629B5D /* ItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCollectionViewCell.swift; sourceTree = "<group>"; };
+		9B3CF1132C5116CF00629B5D /* Member.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Member.swift; sourceTree = "<group>"; };
+		9B3CF1152C5116DD00629B5D /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		ABEF94E4DE58C07482EF1C2B /* libPods-OpenMarket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OpenMarket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -132,6 +136,8 @@
 		9B3CF0F22C3D513800629B5D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				9B3CF1132C5116CF00629B5D /* Member.swift */,
+				9B3CF1152C5116DD00629B5D /* Item.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -300,8 +306,10 @@
 				9B3CF0F52C3D526200629B5D /* SignInViewController.swift in Sources */,
 				9B3CF0FD2C3D52D700629B5D /* HomeViewController.swift in Sources */,
 				9B3CF0E22C3BFC0F00629B5D /* LoginViewController.swift in Sources */,
+				9B3CF1142C5116CF00629B5D /* Member.swift in Sources */,
 				9B3CF10F2C47E09400629B5D /* ItemTableViewCell.swift in Sources */,
 				9B3CF1012C3D531A00629B5D /* CreateItemViewController.swift in Sources */,
+				9B3CF1162C5116DD00629B5D /* Item.swift in Sources */,
 				9B3CF1032C3D533A00629B5D /* MyPageViewController.swift in Sources */,
 				9B3CF0FF2C3D52EA00629B5D /* ItemDetailViewController.swift in Sources */,
 				9B3CF0DE2C3BFC0F00629B5D /* AppDelegate.swift in Sources */,

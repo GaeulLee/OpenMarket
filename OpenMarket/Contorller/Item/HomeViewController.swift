@@ -35,15 +35,19 @@ class HomeViewController: UIViewController {
     }()
     
     
-    private let tableView = UITableView()
+    private let tableView: UITableView = {
+        let tv = UITableView()
+        tv.backgroundColor = .backColor
+        return tv
+    }()
 
-    let collectionView:  UICollectionView = {
+    private let collectionView:  UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.itemSize = CGSize(width: (UIScreen.main.bounds.width / 2) - 20, height: 250)
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .systemBackground
+        cv.backgroundColor = .backColor
         cv.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: K.collectionViewCellID)
         cv.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         return cv
@@ -51,7 +55,8 @@ class HomeViewController: UIViewController {
     
     
     // MARK: - property
-    var items: [String] = [ "one", "two", "three", "two", "three", "two", "three", "two", "three", "two", "three", "two", "three" ]
+    // db 연결 전 임시 데이터
+    var items: [Item] = [ Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1"), Item(itemName: "second", itemPrice: "90,000원", description: "안 좋은 물건 아주 비싸게 팔아봅니다.", date: "2024-07-25", memberID: "seller2"), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1"), Item(itemName: "second", itemPrice: "90,000원", description: "안 좋은 물건 아주 비싸게 팔아봅니다.", date: "2024-07-25", memberID: "seller2"), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1"), Item(itemName: "second", itemPrice: "90,000원", description: "안 좋은 물건 아주 비싸게 팔아봅니다.", date: "2024-07-25", memberID: "seller2"), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1"), Item(itemName: "second", itemPrice: "90,000원", description: "안 좋은 물건 아주 비싸게 팔아봅니다.", date: "2024-07-25", memberID: "seller2"), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1"), Item(itemName: "second", itemPrice: "90,000원", description: "안 좋은 물건 아주 비싸게 팔아봅니다.", date: "2024-07-25", memberID: "seller2") ]
     
     
     // MARK: - objc
@@ -81,7 +86,6 @@ class HomeViewController: UIViewController {
         setTableView()
         setupCollectioView()
         setNavigationBar()
-        setNavigationTitleView()
         setConstraints()
         
         collectionView.isHidden = true
@@ -89,18 +93,9 @@ class HomeViewController: UIViewController {
     
 
     // MARK: - private
-
-    func setupCollectioView() {
-        //  뷰에 추가
-        self.view.addSubview(collectionView)
-        
-        // dataSource 채택
-        collectionView.dataSource = self
-    }
-    
     private func setUI() {
         self.title = "Home"
-        self.view.backgroundColor = .systemBackground
+        self.view.backgroundColor = .backColor
     }
     
     private func setTableView() {
@@ -113,6 +108,13 @@ class HomeViewController: UIViewController {
         self.view.addSubview(tableView)
     }
     
+    func setupCollectioView() {
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        
+        self.view.addSubview(collectionView)
+    }
+    
     private func setNavigationBar() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
@@ -122,10 +124,7 @@ class HomeViewController: UIViewController {
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         
         self.navigationItem.rightBarButtonItem = self.plusButton // 네비게이션 오른쪽 상단 버튼 설정
-    }
-    
-    private func setNavigationTitleView() {
-        self.navigationItem.titleView = segmentedControl
+        self.navigationItem.titleView = segmentedControl // 네비게이션 중앙 요소 설정
     }
     
     private func setConstraints() {
@@ -140,6 +139,7 @@ class HomeViewController: UIViewController {
 
 }
 
+// MARK: - tableView delegate,dataSource
 extension HomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -150,7 +150,6 @@ extension HomeViewController: UITableViewDelegate {
     }
     
 }
-
 extension HomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -166,7 +165,15 @@ extension HomeViewController: UITableViewDataSource {
     
 }
 
-
+// MARK: - collectionView delegate,dataSource
+extension HomeViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("didSelectItemAt data -> \(items[indexPath.row])")
+        let vc = ItemDetailViewController()
+        vc.item = items[indexPath.row]
+        navigationController?.pushViewController(vc, animated: true)
+    }
+}
 extension HomeViewController: UICollectionViewDataSource {
 
     // cell의 갯수

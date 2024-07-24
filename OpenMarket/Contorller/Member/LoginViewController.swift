@@ -176,7 +176,7 @@ class LoginViewController: UIViewController {
         
         let appearance = UITabBarAppearance()
         appearance.configureWithTransparentBackground()
-        tabBarVC.tabBar.backgroundColor = .systemBackground
+        tabBarVC.tabBar.backgroundColor = .backColor
         tabBarVC.tabBar.tintColor = .btnColor
         tabBarVC.tabBar.standardAppearance = appearance
         tabBarVC.tabBar.scrollEdgeAppearance = appearance
@@ -228,7 +228,7 @@ class LoginViewController: UIViewController {
     // MARK: - private
     private func setUI() {
         self.title = ""
-        self.view.backgroundColor = .systemBackground
+        self.view.backgroundColor = .backColor
         
         idTextfield.delegate = self
         pwTextfield.delegate = self

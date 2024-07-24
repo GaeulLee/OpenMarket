@@ -11,16 +11,21 @@ import SnapKit
 class ItemTableViewCell: UITableViewCell {
 
     // MARK: - property
-    public var item: String? {
+    public var item: Item? {
         didSet {
-            pNameLabel.text = self.item
-            pPriceLabel.text = "100,000원"
-        }
+            INameLabel.text = item?.itemName
+            priceLabel.text = item?.itemPrice        }
     }
 
     
     // MARK: - UI elements
-    let testView: UIView = {
+    private let uiView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .backColor
+        return view
+    }()
+    
+    private let testView: UIView = {
         let view = UIView()
         view.backgroundColor = .btnColor
         return view
@@ -32,14 +37,14 @@ class ItemTableViewCell: UITableViewCell {
 //        return imageView
 //    }()
     
-    private let pNameLabel: UILabel = {
+    private let INameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
         label.textColor = .defaultFontColor
         return label
     }()
     
-    private let pPriceLabel: UILabel = {
+    private let priceLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textColor = .defaultFontColor
@@ -75,30 +80,36 @@ class ItemTableViewCell: UITableViewCell {
     
     // MARK: - private
     private func setAddSubview() {
-        labelUIView.addSubview(pNameLabel)
-        labelUIView.addSubview(pPriceLabel)
+        labelUIView.addSubview(INameLabel)
+        labelUIView.addSubview(priceLabel)
         
-        self.addSubview(stackView)
         stackView.addArrangedSubview(testView)
 //        stackView.addArrangedSubview(pImageView)
         stackView.addArrangedSubview(labelUIView)
+        
+        uiView.addSubview(stackView)
+        self.addSubview(uiView)
     }
     
     private func setConstraints() {
-        pNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(labelUIView.snp.top).inset(3)
+        INameLabel.snp.makeConstraints {
+            $0.top.equalTo(labelUIView.snp.top).inset(3)
         }
         
-        pPriceLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(labelUIView.snp.bottom).inset(3)
+        priceLabel.snp.makeConstraints {
+            $0.bottom.equalTo(labelUIView.snp.bottom).inset(3)
         }
         
-        testView.snp.makeConstraints { make in
-            make.height.width.equalTo(90)
+        testView.snp.makeConstraints {
+            $0.height.width.equalTo(90)
         }
         
-        stackView.snp.makeConstraints { make in
-            make.edges.equalTo(self.safeAreaLayoutGuide).inset(5)
+        stackView.snp.makeConstraints {
+            $0.edges.equalTo(uiView.snp.edges).inset(5)
+        }
+        
+        uiView.snp.makeConstraints {
+            $0.edges.equalTo(self.safeAreaLayoutGuide)
         }
         
     }

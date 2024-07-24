@@ -12,5 +12,5 @@ extension UIColor {
     static let btnColor = UIColor(named: "ButtonColor")
     static let tfColor = UIColor(named: "TextFieldColor")
     static let defaultFontColor = UIColor(named: "ReverseSystemColor")
-    
+    static let backColor = UIColor(named: "BackgroundColor")
 }
