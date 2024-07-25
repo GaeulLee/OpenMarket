@@ -27,8 +27,11 @@ class ItemDetailViewController: UIViewController {
             priceLabel.text = item?.itemPrice
             memberIDLabel.text = item?.memberID
             descLabel.text = item?.description
+            self.images = item?.itemImage
         }
     }
+    
+    var images: [String]?
     
     lazy var editButton: UIBarButtonItem = {
         let button = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonTapped))
@@ -38,15 +41,37 @@ class ItemDetailViewController: UIViewController {
     
     // MARK: - UI element
     private let scrollView: UIScrollView = {
-      let scrollView = UIScrollView()
-      return scrollView
+        let sv = UIScrollView()
+        sv.showsVerticalScrollIndicator = false
+        return sv
     }()
     
-    private var imageView: UIImageView = {
-        let img = UIImageView()
-        img.image = .appIcon
-        return img
+    // image slide
+    lazy var imageScrollView: UIScrollView = {
+        let sv = UIScrollView()
+        sv.isPagingEnabled = true
+        sv.showsHorizontalScrollIndicator = false
+        return sv
     }()
+    private let imagePageControl: UIPageControl = {
+        let pc = UIPageControl()
+        pc.currentPage = 0
+        pc.pageIndicatorTintColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.5)
+        pc.currentPageIndicatorTintColor = .white
+        pc.hidesForSinglePage = true
+        return pc
+    }()
+    private let imageNumberLabel: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = UIColor(red: 34/255, green: 34/255, blue: 34/255, alpha: 0.5)
+        label.layer.cornerRadius = 14
+        label.clipsToBounds = true
+        label.font = .systemFont(ofSize: 12, weight: .semibold)
+        label.textColor = .white
+        label.textAlignment = .center
+        return label
+    }()
+    
     
     private var iNameLabel: UILabel = {
         let label = UILabel()
@@ -101,6 +126,7 @@ class ItemDetailViewController: UIViewController {
         setUI()
         setAddSubview()
         setConstraints()
+        setImageSlider(images)
         setUIBarButtonItem()
     }
     
@@ -110,16 +136,74 @@ class ItemDetailViewController: UIViewController {
         self.title = ""
         self.view.backgroundColor = .backColor
     }
+    
+    func setImageSlider(_ images: [String]?) { // scrolliVew에 imageView 추가하는 함수
+        guard let imgs = images else {
+            print("기본 이미지로")
+            return
+        }
+        
+        imageScrollView.delegate = self
+        imagePageControl.numberOfPages = imgs.count
+        imageNumberLabel.text = "\(imagePageControl.currentPage+1)/\(imagePageControl.numberOfPages)"
+        
+        for index in 0..<imgs.count {
+            let imageView = UIImageView()
+            imageView.image = UIImage(named: imgs[index])
+            imageView.contentMode = .scaleAspectFit
 
+            let xPosition = (self.view.frame.width - 20) * CGFloat(index)
+            print(xPosition)
+            imageView.frame = CGRect(x: xPosition,
+                                     y: 0,
+                                     width: (self.view.frame.width - 10),
+                                     height: (self.view.frame.width - 100))
+
+            imageScrollView.contentSize.width = (self.view.frame.width - 20) * CGFloat(index+1)
+            imageScrollView.addSubview(imageView)
+        }
+    }
+    
+//    func setImageSlider(_ images: [String]?) { // scrolliVew에 imageView 추가하는 함수
+//        guard let imgs = images else {
+//            print("기본 이미지로")
+//            return
+//        }
+//        
+//        imageScrollView.delegate = self
+//        
+//        for index in 0..<imgs.count {
+//            let imageView = UIImageView()
+//            imageView.image = UIImage(named: imgs[index])
+//            imageView.contentMode = .scaleAspectFit
+//            imageView.layer.cornerRadius = 5
+//            imageView.clipsToBounds = true
+//
+//            let xPosition = self.scrollView.frame.width * CGFloat(index)
+//            print("\(index)th xPosition -> \(xPosition)")
+//
+//            imageView.frame = CGRect(x: xPosition,
+//                                   y: 0,
+//                                   width: self.scrollView.frame.width,
+//                                   height: self.scrollView.frame.width)
+//
+//            imageScrollView.contentSize.width = self.scrollView.frame.width * CGFloat(index+1)
+//            imageScrollView.addSubview(imageView)
+//        }
+//    }
+    
     private func setAddSubview() {
         priceAndIDLabelView.addSubview(priceLabel)
         priceAndIDLabelView.addSubview(memberIDLabel)
         
-        scrollView.addSubview(imageView)
+        scrollView.addSubview(imageScrollView)
         scrollView.addSubview(iNameLabel)
         scrollView.addSubview(priceAndIDLabelView)
         scrollView.addSubview(descLabel)
+        
         self.view.addSubview(scrollView)
+        self.view.addSubview(imagePageControl)
+        self.view.addSubview(imageNumberLabel)
     }
     
     private func setConstraints() {
@@ -127,16 +211,29 @@ class ItemDetailViewController: UIViewController {
             $0.edges.equalTo(self.view.safeAreaLayoutGuide).inset(7)
         }
 
-        imageView.snp.makeConstraints {
+        imageScrollView.snp.makeConstraints {
             $0.height.equalTo(300)
             $0.top.equalTo(scrollView.snp.top)
             $0.width.equalTo(scrollView.snp.width)
-            
+        }
+        
+        imagePageControl.snp.makeConstraints {
+            $0.centerX.equalTo(self.view)
+            $0.top.equalTo(imageScrollView.snp.bottom).inset(20)
+            $0.height.equalTo(10)
+            $0.width.equalTo(40)
+        }
+        
+        imageNumberLabel.snp.makeConstraints {
+            $0.top.equalTo(scrollView.snp.top).inset(15)
+            $0.right.equalTo(scrollView.snp.right).inset(15)
+            $0.width.equalTo(50)
+            $0.height.equalTo(30)
         }
         
         iNameLabel.snp.makeConstraints {
             $0.height.equalTo(30)
-            $0.top.equalTo(imageView.snp.bottom).inset(-5)
+            $0.top.equalTo(imageScrollView.snp.bottom).inset(-5)
             $0.width.equalTo(scrollView.snp.width)
         }
         
@@ -168,5 +265,15 @@ class ItemDetailViewController: UIViewController {
             // db연결하고 글 작성자인 경우만(글 작성자와 현재 글을 보고있는 사용자가 일치하는지 확인) 수정 버튼 활성화
             self.navigationItem.rightBarButtonItem = self.editButton
         }
+    }
+    
+
+}
+
+extension ItemDetailViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // scrollView가 스와이프 될 때 발생 될 이벤트
+        self.imagePageControl.currentPage = Int(round(imageScrollView.contentOffset.x / UIScreen.main.bounds.width))
+        self.imageNumberLabel.text = "\(imagePageControl.currentPage+1)/\(imagePageControl.numberOfPages)"
     }
 }

@@ -56,7 +56,7 @@ class HomeViewController: UIViewController {
     
     // MARK: - property
     // db 연결 전 임시 데이터
-    var items: [Item] = [ Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.\n 좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1"), Item(itemName: "second", itemPrice: "90,000원", description: "안 좋은 물건 아주 비싸게 팔아봅니다.", date: "2024-07-25", memberID: "seller2"), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1"), Item(itemName: "second", itemPrice: "90,000원", description: "안 좋은 물건 아주 비싸게 팔아봅니다.", date: "2024-07-25", memberID: "seller2"), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1"), Item(itemName: "second", itemPrice: "90,000원", description: "안 좋은 물건 아주 비싸게 팔아봅니다.", date: "2024-07-25", memberID: "seller2"), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1"), Item(itemName: "second", itemPrice: "90,000원", description: "안 좋은 물건 아주 비싸게 팔아봅니다.", date: "2024-07-25", memberID: "seller2"), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1"), Item(itemName: "second", itemPrice: "90,000원", description: "안 좋은 물건 아주 비싸게 팔아봅니다.", date: "2024-07-25", memberID: "seller2") ]
+    var items: [Item] = [ Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller2", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["sample1", "sample2", "sample3"])]
     
     
     // MARK: - objc
@@ -143,7 +143,7 @@ class HomeViewController: UIViewController {
 extension HomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("didSelectRowAt data -> \(items[indexPath.row])")
+        print("didSelectRowAt data -> \(items[indexPath.row].itemName)")
         let vc = ItemDetailViewController()
         vc.item = items[indexPath.row]
         navigationController?.pushViewController(vc, animated: true)
