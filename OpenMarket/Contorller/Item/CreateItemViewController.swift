@@ -6,6 +6,17 @@
 //
 
 import UIKit
+import SnapKit
+
+// MARK: - Preview
+#if canImport(SwiftUI) && DEBUG
+import SwiftUI
+struct CreateItemViewController_Preview: PreviewProvider {
+    static var previews: some View {
+        CreateItemViewController().toPreview()
+    }
+}
+#endif
 
 class CreateItemViewController: UIViewController {
 
@@ -17,17 +28,7 @@ class CreateItemViewController: UIViewController {
     
     private func setUI() {
         self.title = ""
-        self.view.backgroundColor = .systemBackground
+        self.view.backgroundColor = .backColor
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

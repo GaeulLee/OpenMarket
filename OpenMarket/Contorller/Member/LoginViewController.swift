@@ -181,7 +181,7 @@ class LoginViewController: UIViewController {
         tabBarVC.tabBar.standardAppearance = appearance
         tabBarVC.tabBar.scrollEdgeAppearance = appearance
         
-        // 탭바 이미지 설정 (이미지는 애플이 제공하는 것으로 사용)
+        // 탭바 이미지 설정
         guard let items = tabBarVC.tabBar.items else { return }
         items[0].image = UIImage(systemName: "house.fill")
         items[1].image = UIImage(systemName: "person.fill")
