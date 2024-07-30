@@ -62,8 +62,14 @@ class HomeViewController: UIViewController {
     // MARK: - objc
     @objc private func plusButtonTapped() {
         print("plusButtonTapped")
+//        let vc = CreateItemViewController()
+//        navigationController?.pushViewController(vc, animated: true)
+        
+        // push 말고 modal로 vc 띄우자 (해당 vc 띄웠을 때 아래 탭바 부분 안보이게 하기 위함)
         let vc = CreateItemViewController()
-        navigationController?.pushViewController(vc, animated: true)
+        vc.modalPresentationStyle = .fullScreen
+        vc.test = "새 게시물 작성"
+        self.present(vc, animated: true)
     }
     
     @objc private func scValueChanged(_ sender: UISegmentedControl) {
