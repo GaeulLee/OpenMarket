@@ -77,6 +77,10 @@ class FindIDViewController: UIViewController {
     }
     
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+        self.view.endEditing(true)
+    }
+    
     
     // MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -86,11 +90,6 @@ class FindIDViewController: UIViewController {
         setStackView()
         setConstraints()
     }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
-        self.view.endEditing(true)
-    }
-    
 
     // MARK: - private
     private func setUI() {

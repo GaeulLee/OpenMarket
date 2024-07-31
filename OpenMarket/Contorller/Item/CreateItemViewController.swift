@@ -29,55 +29,42 @@ class CreateItemViewController: UIViewController {
 
     
     // MARK: - UI element
-    private let selectPictureView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .backColor
-        view.layer.cornerRadius = 10
-        view.clipsToBounds = true
-        view.layer.borderWidth = 2
-        view.layer.borderColor = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
-        return view
-    }()
+//    private let selectPictureView: UIImageView = {
+//        let view = UIImageView()
+//        view.backgroundColor = .backColor
+//        view.layer.cornerRadius = 10
+//        view.clipsToBounds = true
+//        view.layer.borderWidth = 1
+//        view.layer.borderColor = UIColor.lightGray.cgColor
+//        
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(selectPictureViewTapped(_:))) // UIView 클릭 제스쳐!
+//        view.addGestureRecognizer(tapGesture)
+//        view.isUserInteractionEnabled = true
+//        return view
+//    }()
     
-    // ======================================================  test
-    private let selectPictureView1: UIView = {
-        let view = UIView()
-        view.backgroundColor = .backColor
-        view.layer.cornerRadius = 10
-        view.clipsToBounds = true
-        view.layer.borderWidth = 2
-        view.layer.borderColor = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
-        return view
+    private let selectPhotoBtn: UIButton = {
+        let btn = UIButton()
+        // 버튼 내 이미지 사이즈 조절 위함
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 50, weight: .light)
+        let image = UIImage(systemName: "camera.fill", withConfiguration: imageConfig)
+        btn.setImage(image, for: .normal)
+        
+        btn.tintColor = .lightGray
+        btn.titleLabel?.textColor = .lightGray
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        btn.titleLabel?.text = "0/5"
+        
+        btn.layer.cornerRadius = 10
+        btn.clipsToBounds = true
+        btn.layer.borderWidth = 1
+        btn.layer.borderColor = UIColor.lightGray.cgColor
+        btn.contentMode = .scaleAspectFit
+        
+        
+        btn.addTarget(self, action: #selector(selectPhotoBtnTapped), for: .touchUpInside)
+        return btn
     }()
-    private let selectPictureView2: UIView = {
-        let view = UIView()
-        view.backgroundColor = .backColor
-        view.layer.cornerRadius = 10
-        view.clipsToBounds = true
-        view.layer.borderWidth = 2
-        view.layer.borderColor = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
-        return view
-    }()
-    private let selectPictureView3: UIView = {
-        let view = UIView()
-        view.backgroundColor = .backColor
-        view.layer.cornerRadius = 10
-        view.clipsToBounds = true
-        view.layer.borderWidth = 2
-        view.layer.borderColor = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
-        return view
-    }()
-    private let selectPictureView4: UIView = {
-        let view = UIView()
-        view.backgroundColor = .backColor
-        view.layer.cornerRadius = 10
-        view.clipsToBounds = true
-        view.layer.borderWidth = 2
-        view.layer.borderColor = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
-        return view
-    }()
-    // ======================================================  test
-    
     
     private let selectPictureImage: UIImageView = {
         let view = UIImageView()
@@ -89,8 +76,8 @@ class CreateItemViewController: UIViewController {
     private let imageCountLabel: UILabel = {
         let label = UILabel()
         label.text = "0/5"
-        label.font = .systemFont(ofSize: 16, weight: .bold)
-        label.textColor = .black
+        label.font = .systemFont(ofSize: 16, weight: .regular)
+        label.textColor = .lightGray
         return label
     }()
     
@@ -104,10 +91,14 @@ class CreateItemViewController: UIViewController {
     private let iNameTextfield: UITextField = {
         let tf = UITextField()
         tf.placeholder = "상품명"
+        tf.font = .systemFont(ofSize: 16, weight: .bold)
         tf.borderStyle = .roundedRect
-        tf.backgroundColor = .tfColor
-        tf.textColor = .lightGray
-        tf.tintColor = .lightGray
+        tf.backgroundColor = .clear
+        tf.textColor = .defaultFontColor
+        tf.tintColor = .defaultFontColor
+        tf.layer.borderWidth = 1
+        tf.layer.cornerRadius = 7
+        tf.layer.borderColor = UIColor.lightGray.cgColor
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.spellCheckingType = .no
@@ -117,27 +108,32 @@ class CreateItemViewController: UIViewController {
     private let priceTextfield: UITextField = {
         let tf = UITextField()
         tf.placeholder = "상품 가격"
+        tf.font = .systemFont(ofSize: 16, weight: .bold)
         tf.borderStyle = .roundedRect
-        tf.backgroundColor = .tfColor
-        tf.textColor = .lightGray
-        tf.tintColor = .lightGray
-        tf.autocapitalizationType = .none
-        tf.autocorrectionType = .no
-        tf.spellCheckingType = .no
+        tf.backgroundColor = .clear
+        tf.textColor = .defaultFontColor
+        tf.tintColor = .defaultFontColor
+        tf.layer.borderWidth = 1
+        tf.layer.cornerRadius = 7
+        tf.layer.borderColor = UIColor.lightGray.cgColor
+        tf.keyboardType = .numberPad
         return tf
     }()
     
-    private let descriptionTextfield: UITextField = {
-        let tf = UITextField()
-        tf.placeholder = "상품 설명"
-        tf.borderStyle = .roundedRect
-        tf.backgroundColor = .tfColor
-        tf.textColor = .lightGray
-        tf.tintColor = .lightGray
-        tf.autocapitalizationType = .none
-        tf.autocorrectionType = .no
-        tf.spellCheckingType = .no
-        return tf
+    private let descriptionTextView: UITextView = {
+        let tv = UITextView()
+        tv.text = "상품 설명"
+        tv.font = .systemFont(ofSize: 16, weight: .bold)
+        tv.backgroundColor = .clear
+        tv.textColor = .systemGray3
+        tv.tintColor = .defaultFontColor
+        tv.layer.borderWidth = 1
+        tv.layer.cornerRadius = 7
+        tv.layer.borderColor = UIColor.lightGray.cgColor
+        tv.autocapitalizationType = .none
+        tv.autocorrectionType = .no
+        tv.spellCheckingType = .no
+        return tv
     }()
     
     private let createItemBtn: UIButton = {
@@ -154,8 +150,8 @@ class CreateItemViewController: UIViewController {
     
     private let closeBtn: UIButton = {
         let btn = UIButton()
-        btn.setTitle("X", for: .normal)
-        btn.setTitleColor(.black, for: .normal)
+        btn.setImage(UIImage(systemName: "xmark"), for: .normal)
+        btn.tintColor = .defaultFontColor
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
         btn.addTarget(self, action: #selector(closeBtnTapped), for: .touchUpInside)
         return btn
@@ -167,9 +163,12 @@ class CreateItemViewController: UIViewController {
         return sv
     }()
     
-    private let entireScrollView: UIScrollView = {
-        let sv = UIScrollView()
-        sv.showsVerticalScrollIndicator = false 
+    private let entireStackView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.distribution = .fill
+        sv.alignment = .fill
+        sv.spacing = 10
         return sv
     }()
     
@@ -185,6 +184,20 @@ class CreateItemViewController: UIViewController {
         self.presentingViewController?.dismiss(animated: true)
     }
     
+    @objc private func selectPictureViewTapped(_ gesture: UITapGestureRecognizer) {
+        print("selectPictureViewTapped")
+    }
+    
+    @objc private func selectPhotoBtnTapped() {
+        print("selectPhotoBtnTapped")
+    }
+    
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+        self.view.endEditing(true)
+    }
+    
+    
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -195,7 +208,7 @@ class CreateItemViewController: UIViewController {
         
         //contentSize 속성이 중요한가 보다,, 이미지뷰 동적 생성 시 필요
         imageScrollView.contentSize.width = (105) * CGFloat(5)
-        entireScrollView.contentSize.height = 1000
+
     }
     
     
@@ -203,24 +216,25 @@ class CreateItemViewController: UIViewController {
     private func setUI() {
         self.title = ""
         self.view.backgroundColor = .backColor
+        
+        iNameTextfield.delegate = self
+        priceTextfield.delegate = self
+        descriptionTextView.delegate = self
     }
     
     private func setAddSubview() {
-        selectPictureView.addSubview(selectPictureImage)
+//        selectPictureView.addSubview(selectPictureImage)
         
-        imageScrollView.addSubview(selectPictureView)
-        imageScrollView.addSubview(selectPictureView1)
-        imageScrollView.addSubview(selectPictureView2)
-        imageScrollView.addSubview(selectPictureView3)
-        imageScrollView.addSubview(selectPictureView4)
-        imageScrollView.addSubview(imageCountLabel)
+//        imageScrollView.addSubview(selectPictureView)
+        //imageScrollView.addSubview(imageCountLabel)
+        imageScrollView.addSubview(selectPhotoBtn)
         
-        entireScrollView.addSubview(imageScrollView)
-        entireScrollView.addSubview(iNameTextfield)
-        entireScrollView.addSubview(priceTextfield)
-        entireScrollView.addSubview(descriptionTextfield)
+        entireStackView.addSubview(imageScrollView)
+        entireStackView.addSubview(iNameTextfield)
+        entireStackView.addSubview(priceTextfield)
+        entireStackView.addSubview(descriptionTextView)
     
-        self.view.addSubview(entireScrollView)
+        self.view.addSubview(entireStackView)
         self.view.addSubview(createItemBtn)
         self.view.addSubview(closeBtn)
         self.view.addSubview(vcTitleLabel)
@@ -235,14 +249,14 @@ class CreateItemViewController: UIViewController {
         }
         closeBtn.snp.makeConstraints { // 버튼으로 수정!
             $0.top.equalTo(self.view.snp.top).inset(60)
-            $0.left.equalTo(self.view.snp.left)
+            $0.left.equalTo(self.view.snp.left).inset(10)
         }
         vcTitleLabel.snp.makeConstraints {
             $0.top.equalTo(self.view.snp.top).inset(60)
             $0.centerX.equalTo(self.view.snp.centerX)
         }
         
-        entireScrollView.snp.makeConstraints {
+        entireStackView.snp.makeConstraints {
             $0.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).inset(40)
             $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(50)
             $0.left.equalTo(self.view.safeAreaLayoutGuide.snp.left)
@@ -250,72 +264,85 @@ class CreateItemViewController: UIViewController {
         }
         
         imageScrollView.snp.makeConstraints {
-            $0.top.equalTo(entireScrollView.snp.top)
-            $0.width.equalTo(entireScrollView.snp.width).inset(10)
-            $0.centerX.equalTo(entireScrollView.snp.centerX)
+            $0.top.equalTo(entireStackView.snp.top)
+            $0.width.equalTo(entireStackView.snp.width).inset(10)
+            $0.centerX.equalTo(entireStackView.snp.centerX)
             $0.height.equalTo(120)
         }
-        selectPictureView.snp.makeConstraints {
+        
+//        selectPictureView.snp.makeConstraints {
+//            $0.width.height.equalTo(100)
+//            $0.centerY.equalTo(imageScrollView.snp.centerY)
+//            $0.left.equalTo(imageScrollView.snp.left)
+//        }
+        
+        selectPhotoBtn.snp.makeConstraints {
             $0.width.height.equalTo(100)
             $0.centerY.equalTo(imageScrollView.snp.centerY)
             $0.left.equalTo(imageScrollView.snp.left)
         }
         
         // ======================================================  test
-        selectPictureView1.snp.makeConstraints {
-            $0.width.height.equalTo(100)
-            $0.centerY.equalTo(imageScrollView.snp.centerY)
-            $0.left.equalTo(selectPictureView.snp.right).inset(-5)
-        }
-        selectPictureView2.snp.makeConstraints {
-            $0.width.height.equalTo(100)
-            $0.centerY.equalTo(imageScrollView.snp.centerY)
-            $0.left.equalTo(selectPictureView1.snp.right).inset(-5)
-        }
-        selectPictureView3.snp.makeConstraints {
-            $0.width.height.equalTo(100)
-            $0.centerY.equalTo(imageScrollView.snp.centerY)
-            $0.left.equalTo(selectPictureView2.snp.right).inset(-5)
-        }
-        selectPictureView4.snp.makeConstraints {
-            $0.width.height.equalTo(100)
-            $0.centerY.equalTo(imageScrollView.snp.centerY)
-            $0.left.equalTo(selectPictureView3.snp.right).inset(-5)
-        }
+//        selectPictureView1.snp.makeConstraints {
+//            $0.width.height.equalTo(100)
+//            $0.centerY.equalTo(imageScrollView.snp.centerY)
+//            $0.left.equalTo(selectPictureView.snp.right).inset(-5)
+//        }
         // ======================================================  test
         
-        selectPictureImage.snp.makeConstraints {
-            $0.width.height.equalTo(80)
-            $0.centerX.equalTo(selectPictureView.snp.centerX)
-            $0.top.equalTo(selectPictureView.snp.top)
-        }
-        imageCountLabel.snp.makeConstraints {
-            $0.centerX.equalTo(selectPictureView.snp.centerX)
-            $0.bottom.equalTo(selectPictureView.snp.bottom).inset(8)
-        }
+//        selectPictureImage.snp.makeConstraints {
+//            $0.width.height.equalTo(80)
+//            $0.centerX.equalTo(selectPictureView.snp.centerX)
+//            $0.top.equalTo(selectPictureView.snp.top)
+//        }
+//        imageCountLabel.snp.makeConstraints {
+//            $0.centerX.equalTo(selectPictureView.snp.centerX)
+//            $0.bottom.equalTo(selectPictureView.snp.bottom).inset(8)
+//        }
         
         iNameTextfield.snp.makeConstraints {
             $0.top.equalTo(imageScrollView.snp.bottom).inset(-15)
-            $0.width.equalTo(entireScrollView.snp.width).inset(10)
-            $0.centerX.equalTo(entireScrollView.snp.centerX)
+            $0.width.equalTo(entireStackView.snp.width).inset(10)
+            $0.centerX.equalTo(entireStackView.snp.centerX)
             $0.height.equalTo(45)
         }
         
         priceTextfield.snp.makeConstraints {
             $0.top.equalTo(iNameTextfield.snp.bottom).inset(-10)
-            $0.width.equalTo(entireScrollView.snp.width).inset(10)
-            $0.centerX.equalTo(entireScrollView.snp.centerX)
+            $0.width.equalTo(entireStackView.snp.width).inset(10)
+            $0.centerX.equalTo(entireStackView.snp.centerX)
             $0.height.equalTo(45)
         }
         
-        descriptionTextfield.snp.makeConstraints {
+        descriptionTextView.snp.makeConstraints {
             $0.top.equalTo(priceTextfield.snp.bottom).inset(-10)
-            $0.width.equalTo(entireScrollView.snp.width).inset(10)
-            $0.centerX.equalTo(entireScrollView.snp.centerX)
-            $0.height.equalTo(600)
+            $0.width.equalTo(entireStackView.snp.width).inset(10)
+            $0.centerX.equalTo(entireStackView.snp.centerX)
+            $0.height.equalTo(390)
+//            $0.bottom.lessThanOrEqualToSuperview()
         }
-        
 
     }
+    
+}
 
+extension CreateItemViewController: UITextFieldDelegate {
+    
+}
+
+extension CreateItemViewController: UITextViewDelegate {
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == .systemGray3 {
+            textView.text = nil
+            textView.textColor = .defaultFontColor
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty{
+            textView.text = "상품 설명"
+            textView.textColor = .systemGray3
+        }
+    }
 }

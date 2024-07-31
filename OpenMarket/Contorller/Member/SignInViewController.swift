@@ -130,6 +130,11 @@ class SignInViewController: UIViewController {
     }
 
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+        self.view.endEditing(true)
+    }
+    
+    
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -138,10 +143,7 @@ class SignInViewController: UIViewController {
         setStackView()
         setConstraints()
     }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
-        self.view.endEditing(true)
-    }
+
     
     // MARK: - private
     private func setUI() {
