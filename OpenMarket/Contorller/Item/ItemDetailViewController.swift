@@ -113,8 +113,24 @@ class ItemDetailViewController: UIViewController {
     // MARK: - objc
     @objc private func editButtonTapped() {
         print("editButtonTapped")
-        let vc = CreateItemViewController()
-        navigationController?.pushViewController(vc, animated: true)
+//        let vc = CreateItemViewController()
+//        navigationController?.pushViewController(vc, animated: true)
+        
+        let actionSheet = UIAlertController()
+        
+        actionSheet.addAction(UIAlertAction(title: "수정", style: .default, handler: { UIAlertAction in
+            let vc = CreateItemViewController()
+            vc.modalPresentationStyle = .fullScreen
+            vc.test = "게시물 수정"
+            // 작성된 글 정보 전달!!
+            self.present(vc, animated: true)
+        }))
+        actionSheet.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { UIAlertAction in
+            // 삭제 로직
+        }))
+        actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        
+        self.present(actionSheet, animated: true)
     }
 
     

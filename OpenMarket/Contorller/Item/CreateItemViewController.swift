@@ -26,42 +26,29 @@ class CreateItemViewController: UIViewController {
             vcTitleLabel.text = test
         }
     }
+    
+    var uploadedImageCnt: Int = 0
 
     
     // MARK: - UI element
-//    private let selectPictureView: UIImageView = {
-//        let view = UIImageView()
-//        view.backgroundColor = .backColor
-//        view.layer.cornerRadius = 10
-//        view.clipsToBounds = true
-//        view.layer.borderWidth = 1
-//        view.layer.borderColor = UIColor.lightGray.cgColor
-//        
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(selectPictureViewTapped(_:))) // UIView 클릭 제스쳐!
-//        view.addGestureRecognizer(tapGesture)
-//        view.isUserInteractionEnabled = true
-//        return view
-//    }()
-    
     private let selectPhotoBtn: UIButton = {
         let btn = UIButton()
-        // 버튼 내 이미지 사이즈 조절 위함
+        // 버튼 내 이미지 사이즈 조절
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 50, weight: .light)
         let image = UIImage(systemName: "camera.fill", withConfiguration: imageConfig)
         btn.setImage(image, for: .normal)
+        // 버튼 내 텍스트 및 이미지 위치 조절
+        btn.imageEdgeInsets = .init(top: -22.5, left: 12.5, bottom: 0, right: 0)
+        btn.titleEdgeInsets = .init(top: 57, left: -70, bottom: 0, right: 0)
         
         btn.tintColor = .lightGray
-        btn.titleLabel?.textColor = .lightGray
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
-        btn.titleLabel?.text = "0/5"
-        
+        btn.setTitleColor(.lightGray, for: .normal)
+        btn.setTitle("0/5", for: .normal)
         btn.layer.cornerRadius = 10
         btn.clipsToBounds = true
         btn.layer.borderWidth = 1
         btn.layer.borderColor = UIColor.lightGray.cgColor
-        btn.contentMode = .scaleAspectFit
-        
-        
         btn.addTarget(self, action: #selector(selectPhotoBtnTapped), for: .touchUpInside)
         return btn
     }()
@@ -90,8 +77,8 @@ class CreateItemViewController: UIViewController {
     
     private let iNameTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "상품명"
-        tf.font = .systemFont(ofSize: 16, weight: .bold)
+        tf.attributedPlaceholder = NSAttributedString(string: "상품명", attributes: [.foregroundColor: UIColor.lightGray])
+        tf.font = .systemFont(ofSize: 16, weight: .regular)
         tf.borderStyle = .roundedRect
         tf.backgroundColor = .clear
         tf.textColor = .defaultFontColor
@@ -107,8 +94,8 @@ class CreateItemViewController: UIViewController {
     
     private let priceTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "상품 가격"
-        tf.font = .systemFont(ofSize: 16, weight: .bold)
+        tf.attributedPlaceholder = NSAttributedString(string: "상품 가격", attributes: [.foregroundColor: UIColor.lightGray])
+        tf.font = .systemFont(ofSize: 16, weight: .regular)
         tf.borderStyle = .roundedRect
         tf.backgroundColor = .clear
         tf.textColor = .defaultFontColor
@@ -122,10 +109,10 @@ class CreateItemViewController: UIViewController {
     
     private let descriptionTextView: UITextView = {
         let tv = UITextView()
-        tv.text = "상품 설명"
-        tv.font = .systemFont(ofSize: 16, weight: .bold)
+        tv.text = "상품에 대한 설명을 적어주세요."
+        tv.font = .systemFont(ofSize: 16, weight: .regular)
         tv.backgroundColor = .clear
-        tv.textColor = .systemGray3
+        tv.textColor = .lightGray
         tv.tintColor = .defaultFontColor
         tv.layer.borderWidth = 1
         tv.layer.cornerRadius = 7
@@ -172,6 +159,7 @@ class CreateItemViewController: UIViewController {
         return sv
     }()
     
+    private let imagePicker = UIImagePickerController()
     
     
     // MARK: - objc
@@ -189,7 +177,22 @@ class CreateItemViewController: UIViewController {
     }
     
     @objc private func selectPhotoBtnTapped() {
-        print("selectPhotoBtnTapped")
+        if self.uploadedImageCnt > 4 { return }
+        
+        let actionSheet = UIAlertController()
+        
+        actionSheet.addAction(UIAlertAction(title: "사진 촬영", style: .default, handler: { UIAlertAction in
+            self.imagePicker.sourceType = .camera
+            self.present(self.imagePicker, animated: true)
+        }))
+        actionSheet.addAction(UIAlertAction(title: "사진 선택", style: .default, handler: { UIAlertAction in
+            self.imagePicker.sourceType = .photoLibrary
+            // 사진 여러장 선택할 수 있게..
+            self.present(self.imagePicker, animated: true)
+        }))
+        actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        
+        self.present(actionSheet, animated: true)
     }
     
     
@@ -205,10 +208,6 @@ class CreateItemViewController: UIViewController {
         setUI()
         setAddSubview()
         setConstraints()
-        
-        //contentSize 속성이 중요한가 보다,, 이미지뷰 동적 생성 시 필요
-        imageScrollView.contentSize.width = (105) * CGFloat(5)
-
     }
     
     
@@ -220,13 +219,10 @@ class CreateItemViewController: UIViewController {
         iNameTextfield.delegate = self
         priceTextfield.delegate = self
         descriptionTextView.delegate = self
+        imagePicker.delegate = self
     }
     
     private func setAddSubview() {
-//        selectPictureView.addSubview(selectPictureImage)
-        
-//        imageScrollView.addSubview(selectPictureView)
-        //imageScrollView.addSubview(imageCountLabel)
         imageScrollView.addSubview(selectPhotoBtn)
         
         entireStackView.addSubview(imageScrollView)
@@ -242,12 +238,12 @@ class CreateItemViewController: UIViewController {
     
     private func setConstraints() {
         createItemBtn.snp.makeConstraints {
-            $0.left.equalTo(self.view.snp.left).inset(15)
-            $0.right.equalTo(self.view.snp.right).inset(15)
-            $0.bottom.equalTo(self.view.snp.bottom).inset(30)
+            $0.left.equalTo(self.view.snp.left).inset(10)
+            $0.right.equalTo(self.view.snp.right).inset(10)
+            $0.bottom.equalTo(self.view.snp.bottom).inset(40)
             $0.height.equalTo(45)
         }
-        closeBtn.snp.makeConstraints { // 버튼으로 수정!
+        closeBtn.snp.makeConstraints {
             $0.top.equalTo(self.view.snp.top).inset(60)
             $0.left.equalTo(self.view.snp.left).inset(10)
         }
@@ -269,39 +265,14 @@ class CreateItemViewController: UIViewController {
             $0.centerX.equalTo(entireStackView.snp.centerX)
             $0.height.equalTo(120)
         }
-        
-//        selectPictureView.snp.makeConstraints {
-//            $0.width.height.equalTo(100)
-//            $0.centerY.equalTo(imageScrollView.snp.centerY)
-//            $0.left.equalTo(imageScrollView.snp.left)
-//        }
-        
         selectPhotoBtn.snp.makeConstraints {
             $0.width.height.equalTo(100)
             $0.centerY.equalTo(imageScrollView.snp.centerY)
             $0.left.equalTo(imageScrollView.snp.left)
         }
         
-        // ======================================================  test
-//        selectPictureView1.snp.makeConstraints {
-//            $0.width.height.equalTo(100)
-//            $0.centerY.equalTo(imageScrollView.snp.centerY)
-//            $0.left.equalTo(selectPictureView.snp.right).inset(-5)
-//        }
-        // ======================================================  test
-        
-//        selectPictureImage.snp.makeConstraints {
-//            $0.width.height.equalTo(80)
-//            $0.centerX.equalTo(selectPictureView.snp.centerX)
-//            $0.top.equalTo(selectPictureView.snp.top)
-//        }
-//        imageCountLabel.snp.makeConstraints {
-//            $0.centerX.equalTo(selectPictureView.snp.centerX)
-//            $0.bottom.equalTo(selectPictureView.snp.bottom).inset(8)
-//        }
-        
         iNameTextfield.snp.makeConstraints {
-            $0.top.equalTo(imageScrollView.snp.bottom).inset(-15)
+            $0.top.equalTo(imageScrollView.snp.bottom).inset(-10)
             $0.width.equalTo(entireStackView.snp.width).inset(10)
             $0.centerX.equalTo(entireStackView.snp.centerX)
             $0.height.equalTo(45)
@@ -318,8 +289,7 @@ class CreateItemViewController: UIViewController {
             $0.top.equalTo(priceTextfield.snp.bottom).inset(-10)
             $0.width.equalTo(entireStackView.snp.width).inset(10)
             $0.centerX.equalTo(entireStackView.snp.centerX)
-            $0.height.equalTo(390)
-//            $0.bottom.lessThanOrEqualToSuperview()
+            $0.height.equalTo(400)
         }
 
     }
@@ -333,7 +303,7 @@ extension CreateItemViewController: UITextFieldDelegate {
 extension CreateItemViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == .systemGray3 {
+        if textView.textColor == .lightGray {
             textView.text = nil
             textView.textColor = .defaultFontColor
         }
@@ -341,8 +311,51 @@ extension CreateItemViewController: UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty{
-            textView.text = "상품 설명"
-            textView.textColor = .systemGray3
+            textView.text = "상품에 대한 설명을 적어주세요."
+            textView.textColor = .lightGray
         }
     }
+}
+
+extension CreateItemViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            // 새로운 이미지 뷰 만들고
+            let view = UIImageView()
+            view.backgroundColor = .backColor
+            view.layer.cornerRadius = 10
+            view.clipsToBounds = true
+            view.layer.borderWidth = 1
+            view.layer.borderColor = UIColor.lightGray.cgColor
+            view.image = image
+            
+            self.uploadedImageCnt += 1
+            
+            // UI 설정
+            DispatchQueue.main.async {
+                self.view.addSubview(view) // 뷰에 추가!!
+                view.snp.makeConstraints { // 레이아웃 설정
+                    $0.width.height.equalTo(100)
+                    $0.centerY.equalTo(self.imageScrollView.snp.centerY)
+
+                    print("self.uploadedImageCnt-> \(self.uploadedImageCnt)")
+                    if self.uploadedImageCnt == 1 {
+                        $0.left.equalTo(self.selectPhotoBtn.snp.right).inset(-5)
+                    } else {
+                        $0.left.equalTo(self.selectPhotoBtn.snp.right).inset(-(105 * CGFloat(self.uploadedImageCnt-1)) - 5)
+                    }
+                }
+                
+                //contentSize 속성 설정, 이미지뷰 동적 생성 시 필요
+                self.imageScrollView.contentSize.width = 105 * CGFloat(self.uploadedImageCnt+1)
+                
+                // 바튼 레이블 설정
+                self.selectPhotoBtn.setTitle("\(self.uploadedImageCnt)/5", for: .normal)
+            }
+            
+            picker.dismiss(animated: true, completion: nil)
+        }
+    }
+    
 }
