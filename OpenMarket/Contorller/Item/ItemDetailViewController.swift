@@ -112,10 +112,6 @@ class ItemDetailViewController: UIViewController {
     
     // MARK: - objc
     @objc private func editButtonTapped() {
-        print("editButtonTapped")
-//        let vc = CreateItemViewController()
-//        navigationController?.pushViewController(vc, animated: true)
-        
         let actionSheet = UIAlertController()
         
         actionSheet.addAction(UIAlertAction(title: "수정", style: .default, handler: { UIAlertAction in
@@ -179,34 +175,6 @@ class ItemDetailViewController: UIViewController {
             imageScrollView.addSubview(imageView)
         }
     }
-    
-//    func setImageSlider(_ images: [String]?) { // scrolliVew에 imageView 추가하는 함수
-//        guard let imgs = images else {
-//            print("기본 이미지로")
-//            return
-//        }
-//        
-//        imageScrollView.delegate = self
-//        
-//        for index in 0..<imgs.count {
-//            let imageView = UIImageView()
-//            imageView.image = UIImage(named: imgs[index])
-//            imageView.contentMode = .scaleAspectFit
-//            imageView.layer.cornerRadius = 5
-//            imageView.clipsToBounds = true
-//
-//            let xPosition = self.scrollView.frame.width * CGFloat(index)
-//            print("\(index)th xPosition -> \(xPosition)")
-//
-//            imageView.frame = CGRect(x: xPosition,
-//                                   y: 0,
-//                                   width: self.scrollView.frame.width,
-//                                   height: self.scrollView.frame.width)
-//
-//            imageScrollView.contentSize.width = self.scrollView.frame.width * CGFloat(index+1)
-//            imageScrollView.addSubview(imageView)
-//        }
-//    }
     
     private func setAddSubview() {
         priceAndIDLabelView.addSubview(priceLabel)

@@ -11,4 +11,5 @@ struct K {
     // static
     static let tableViewCellID = "ItemTableViewCell"
     static let collectionViewCellID = "ItemCollectionViewCell"
+    static let itemCellID = "ItemImageCollectionViewCell"
 }

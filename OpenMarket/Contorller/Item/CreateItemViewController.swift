@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import PhotosUI
 
 // MARK: - Preview
 #if canImport(SwiftUI) && DEBUG
@@ -28,6 +29,10 @@ class CreateItemViewController: UIViewController {
     }
     
     var uploadedImageCnt: Int = 0
+    private var selections = [String : PHPickerResult]() // Dictionary (이미지 데이터 저장)
+    // 선택한 사진의 순서에 맞게 Identifier들을 배열로 저장
+    // selections은 딕셔너리이기 때문에 순서 X. 그래서 따로 식별자를 담을 배열 생성
+    private var selectedAssetIdentifiers = [String]()
 
     
     // MARK: - UI element
@@ -144,10 +149,27 @@ class CreateItemViewController: UIViewController {
         return btn
     }()
     
-    private let imageScrollView: UIScrollView = {
-        let sv = UIScrollView()
-        sv.showsHorizontalScrollIndicator = false
-        return sv
+//    private let imageScrollView: UIScrollView = {
+//        let sv = UIScrollView()
+//        sv.showsHorizontalScrollIndicator = false
+//        return sv
+//    }()
+    // 스크롤뷰가 아닌 컬렉션뷰로 구현하자
+    private let collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: 100, height: 100)
+        
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.backgroundColor = .backColor
+        cv.register(ItemImageCollectionViewCell.self, forCellWithReuseIdentifier: K.itemCellID)
+        cv.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        return cv
+    }()
+    
+    private let topView: UIView = {
+        let view = UIView()
+        return view
     }()
     
     private let entireStackView: UIStackView = {
@@ -159,7 +181,18 @@ class CreateItemViewController: UIViewController {
         return sv
     }()
     
-    private let imagePicker = UIImagePickerController()
+    private let imagePicker = UIImagePickerController() // 촬영사진 사용
+    private lazy var PHPicker: PHPickerViewController = { // 사진첩 사진 사용
+        var config = PHPickerConfiguration(photoLibrary: .shared()) // 이미지의 Identifier를 사용하기 위해서는 초기화를 shared로
+        config.filter = .images // 라이브러리에서 보여줄 Assets 필터 (기본값: 이미지, 비디오, 라이브포토)
+        config.selection = .ordered
+        config.selectionLimit = 5 // 다중 선택 갯수 설정 (0 = 무제한)
+        config.preselectedAssetIdentifiers = selectedAssetIdentifiers // 이 동작이 있어야 PHPicker를 실행 시, 선택했던 이미지를 기억해 표시 (델리게이트 코드 참고)
+        
+        let picker = PHPickerViewController(configuration: config)
+        return picker
+        
+    }()
     
     
     // MARK: - objc
@@ -186,9 +219,11 @@ class CreateItemViewController: UIViewController {
             self.present(self.imagePicker, animated: true)
         }))
         actionSheet.addAction(UIAlertAction(title: "사진 선택", style: .default, handler: { UIAlertAction in
-            self.imagePicker.sourceType = .photoLibrary
+            //self.imagePicker.sourceType = .photoLibrary
+            //self.present(self.imagePicker, animated: true)
+            
             // 사진 여러장 선택할 수 있게..
-            self.present(self.imagePicker, animated: true)
+            self.present(self.PHPicker, animated: true)
         }))
         actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
         
@@ -219,13 +254,17 @@ class CreateItemViewController: UIViewController {
         iNameTextfield.delegate = self
         priceTextfield.delegate = self
         descriptionTextView.delegate = self
-        imagePicker.delegate = self
+        PHPicker.delegate = self
+        
+        collectionView.delegate = self
+        collectionView.dataSource = self
     }
     
     private func setAddSubview() {
-        imageScrollView.addSubview(selectPhotoBtn)
-        
-        entireStackView.addSubview(imageScrollView)
+        topView.addSubview(selectPhotoBtn)
+        topView.addSubview(collectionView)
+
+        entireStackView.addSubview(topView)
         entireStackView.addSubview(iNameTextfield)
         entireStackView.addSubview(priceTextfield)
         entireStackView.addSubview(descriptionTextView)
@@ -259,7 +298,8 @@ class CreateItemViewController: UIViewController {
             $0.right.equalTo(self.view.safeAreaLayoutGuide.snp.right)
         }
         
-        imageScrollView.snp.makeConstraints {
+        
+        topView.snp.makeConstraints {
             $0.top.equalTo(entireStackView.snp.top)
             $0.width.equalTo(entireStackView.snp.width).inset(10)
             $0.centerX.equalTo(entireStackView.snp.centerX)
@@ -267,16 +307,25 @@ class CreateItemViewController: UIViewController {
         }
         selectPhotoBtn.snp.makeConstraints {
             $0.width.height.equalTo(100)
-            $0.centerY.equalTo(imageScrollView.snp.centerY)
-            $0.left.equalTo(imageScrollView.snp.left)
+            $0.centerY.equalTo(topView.snp.centerY)
+            $0.left.equalTo(topView.snp.left)
+        }
+        collectionView.snp.makeConstraints {
+            $0.height.equalTo(100)
+            $0.centerY.equalTo(topView.snp.centerY)
+            $0.left.equalTo(selectPhotoBtn.snp.right)
+            $0.right.equalTo(topView.snp.right)
         }
         
+        
         iNameTextfield.snp.makeConstraints {
-            $0.top.equalTo(imageScrollView.snp.bottom).inset(-10)
+            $0.top.equalTo(topView.snp.bottom).inset(-10)
             $0.width.equalTo(entireStackView.snp.width).inset(10)
             $0.centerX.equalTo(entireStackView.snp.centerX)
             $0.height.equalTo(45)
         }
+        
+        
         
         priceTextfield.snp.makeConstraints {
             $0.top.equalTo(iNameTextfield.snp.bottom).inset(-10)
@@ -321,41 +370,87 @@ extension CreateItemViewController: UIImagePickerControllerDelegate, UINavigatio
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            // 새로운 이미지 뷰 만들고
-            let view = UIImageView()
-            view.backgroundColor = .backColor
-            view.layer.cornerRadius = 10
-            view.clipsToBounds = true
-            view.layer.borderWidth = 1
-            view.layer.borderColor = UIColor.lightGray.cgColor
-            view.image = image
-            
+
             self.uploadedImageCnt += 1
             
-            // UI 설정
-            DispatchQueue.main.async {
-                self.view.addSubview(view) // 뷰에 추가!!
-                view.snp.makeConstraints { // 레이아웃 설정
-                    $0.width.height.equalTo(100)
-                    $0.centerY.equalTo(self.imageScrollView.snp.centerY)
-
-                    print("self.uploadedImageCnt-> \(self.uploadedImageCnt)")
-                    if self.uploadedImageCnt == 1 {
-                        $0.left.equalTo(self.selectPhotoBtn.snp.right).inset(-5)
-                    } else {
-                        $0.left.equalTo(self.selectPhotoBtn.snp.right).inset(-(105 * CGFloat(self.uploadedImageCnt-1)) - 5)
-                    }
-                }
-                
-                //contentSize 속성 설정, 이미지뷰 동적 생성 시 필요
-                self.imageScrollView.contentSize.width = 105 * CGFloat(self.uploadedImageCnt+1)
-                
-                // 바튼 레이블 설정
-                self.selectPhotoBtn.setTitle("\(self.uploadedImageCnt)/5", for: .normal)
-            }
+//            // UI 설정
+//            DispatchQueue.main.async {
+//                // 새로운 이미지 뷰 만들고
+//                let view = UIImageView()
+//                view.backgroundColor = .backColor
+//                view.layer.cornerRadius = 10
+//                view.clipsToBounds = true
+//                view.layer.borderWidth = 1
+//                view.layer.borderColor = UIColor.lightGray.cgColor
+//                view.image = image
+//                
+//                self.view.addSubview(view) // 뷰에 추가!!
+//                view.snp.makeConstraints { // 레이아웃 설정
+//                    $0.width.height.equalTo(100)
+//                    $0.centerY.equalTo(self.imageScrollView.snp.centerY)
+//
+//                    print("self.uploadedImageCnt-> \(self.uploadedImageCnt)")
+//                    if self.uploadedImageCnt == 1 {
+//                        $0.left.equalTo(self.selectPhotoBtn.snp.right).inset(-5)
+//                    } else {
+//                        $0.left.equalTo(self.selectPhotoBtn.snp.right).inset(-(105 * CGFloat(self.uploadedImageCnt-1)) - 5)
+//                    }
+//                }
+//                
+//                //contentSize 속성 설정, 이미지뷰 동적 생성 시 필요
+//                self.imageScrollView.contentSize.width = 105 * CGFloat(self.uploadedImageCnt+1)
+//                
+//                // 바튼 레이블 설정
+//                self.selectPhotoBtn.setTitle("\(self.uploadedImageCnt)/5", for: .normal)
+//            }
             
             picker.dismiss(animated: true, completion: nil)
         }
+    }
+    
+}
+
+extension CreateItemViewController: PHPickerViewControllerDelegate {
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        // Picker의 작업이 끝난 후, 새로 만들어질 selections을 담을 변수를 생성
+        var newSelections = [String: PHPickerResult]()
+        
+        for result in results {
+            let identifier = result.assetIdentifier!
+            // ⭐️ 여기는 WWDC에서 3분 부분을 참고 (Picker의 사진의 저장 방식)
+            newSelections[identifier] = selections[identifier] ?? result
+        }
+        
+        // selections에 새로 만들어진 newSelection을 넣어줍시다.
+        selections = newSelections
+        // Picker에서 선택한 이미지의 Identifier들을 저장 (assetIdentifier은 옵셔널 값이라서 compactMap 받음)
+        // 위의 PHPickerConfiguration에서 사용하기 위해서 입니다.
+        selectedAssetIdentifiers = results.compactMap { $0.assetIdentifier }
+    }
+    
+}
+
+extension CreateItemViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print(indexPath.row)
+        
+    }
+}
+extension CreateItemViewController: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        5
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: K.itemCellID, for: indexPath) as? ItemImageCollectionViewCell else {
+            fatalError("Failed to load cell!")
+        }
+        cell.setupCell(img: nil)
+        return cell
     }
     
 }

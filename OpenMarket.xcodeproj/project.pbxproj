@@ -29,6 +29,7 @@
 		9B3CF1122C49354300629B5D /* ItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1112C49354300629B5D /* ItemCollectionViewCell.swift */; };
 		9B3CF1142C5116CF00629B5D /* Member.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1132C5116CF00629B5D /* Member.swift */; };
 		9B3CF1162C5116DD00629B5D /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1152C5116DD00629B5D /* Item.swift */; };
+		9B3CF1182C6106CE00629B5D /* ItemImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1172C6106CE00629B5D /* ItemImageCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +58,7 @@
 		9B3CF1112C49354300629B5D /* ItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCollectionViewCell.swift; sourceTree = "<group>"; };
 		9B3CF1132C5116CF00629B5D /* Member.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Member.swift; sourceTree = "<group>"; };
 		9B3CF1152C5116DD00629B5D /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		9B3CF1172C6106CE00629B5D /* ItemImageCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		ABEF94E4DE58C07482EF1C2B /* libPods-OpenMarket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OpenMarket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -149,6 +151,7 @@
 				9B3CF0E82C3BFC1000629B5D /* LaunchScreen.storyboard */,
 				9B3CF10D2C47E09400629B5D /* ItemTableViewCell.swift */,
 				9B3CF1112C49354300629B5D /* ItemCollectionViewCell.swift */,
+				9B3CF1172C6106CE00629B5D /* ItemImageCollectionViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -313,6 +316,7 @@
 				9B3CF1032C3D533A00629B5D /* MyPageViewController.swift in Sources */,
 				9B3CF0FF2C3D52EA00629B5D /* ItemDetailViewController.swift in Sources */,
 				9B3CF0DE2C3BFC0F00629B5D /* AppDelegate.swift in Sources */,
+				9B3CF1182C6106CE00629B5D /* ItemImageCollectionViewCell.swift in Sources */,
 				9B3CF10A2C468E1500629B5D /* UIColor+Extension.swift in Sources */,
 				9B3CF1122C49354300629B5D /* ItemCollectionViewCell.swift in Sources */,
 				9B3CF0E02C3BFC0F00629B5D /* SceneDelegate.swift in Sources */,
