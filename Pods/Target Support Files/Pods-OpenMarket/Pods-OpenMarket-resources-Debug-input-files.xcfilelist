@@ -1,2 +1,3 @@
 ${PODS_ROOT}/Target Support Files/Pods-OpenMarket/Pods-OpenMarket-resources.sh
+${PODS_CONFIGURATION_BUILD_DIR}/BSImagePicker/BSImagePicker.bundle
 ${PODS_CONFIGURATION_BUILD_DIR}/SnapKit/SnapKit_Privacy.bundle

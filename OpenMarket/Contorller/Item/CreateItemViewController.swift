@@ -7,11 +7,14 @@
 
 import UIKit
 import SnapKit
-import PhotosUI
+import BSImagePicker
+import Photos
+
 
 // MARK: - Preview
 #if canImport(SwiftUI) && DEBUG
 import SwiftUI
+
 struct CreateItemViewController_Preview: PreviewProvider {
     static var previews: some View {
         CreateItemViewController().toPreview()
@@ -28,12 +31,10 @@ class CreateItemViewController: UIViewController {
         }
     }
     
-    var uploadedImageCnt: Int = 0
-    private var selections = [String : PHPickerResult]() // Dictionary (이미지 데이터 저장)
-    // 선택한 사진의 순서에 맞게 Identifier들을 배열로 저장
-    // selections은 딕셔너리이기 때문에 순서 X. 그래서 따로 식별자를 담을 배열 생성
-    private var selectedAssetIdentifiers = [String]()
-
+    private var uploadedImageCnt: Int = 0
+    private var images: [UIImage] = [] // 선택된 이미지를 담을 배열
+    private let imageShooter = UIImagePickerController() // 촬영사진 사용
+    
     
     // MARK: - UI element
     private let selectPhotoBtn: UIButton = {
@@ -144,16 +145,10 @@ class CreateItemViewController: UIViewController {
         let btn = UIButton()
         btn.setImage(UIImage(systemName: "xmark"), for: .normal)
         btn.tintColor = .defaultFontColor
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
         btn.addTarget(self, action: #selector(closeBtnTapped), for: .touchUpInside)
         return btn
     }()
     
-//    private let imageScrollView: UIScrollView = {
-//        let sv = UIScrollView()
-//        sv.showsHorizontalScrollIndicator = false
-//        return sv
-//    }()
     // 스크롤뷰가 아닌 컬렉션뷰로 구현하자
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -180,19 +175,7 @@ class CreateItemViewController: UIViewController {
         sv.spacing = 10
         return sv
     }()
-    
-    private let imagePicker = UIImagePickerController() // 촬영사진 사용
-    private lazy var PHPicker: PHPickerViewController = { // 사진첩 사진 사용
-        var config = PHPickerConfiguration(photoLibrary: .shared()) // 이미지의 Identifier를 사용하기 위해서는 초기화를 shared로
-        config.filter = .images // 라이브러리에서 보여줄 Assets 필터 (기본값: 이미지, 비디오, 라이브포토)
-        config.selection = .ordered
-        config.selectionLimit = 5 // 다중 선택 갯수 설정 (0 = 무제한)
-        config.preselectedAssetIdentifiers = selectedAssetIdentifiers // 이 동작이 있어야 PHPicker를 실행 시, 선택했던 이미지를 기억해 표시 (델리게이트 코드 참고)
-        
-        let picker = PHPickerViewController(configuration: config)
-        return picker
-        
-    }()
+
     
     
     // MARK: - objc
@@ -212,22 +195,66 @@ class CreateItemViewController: UIViewController {
     @objc private func selectPhotoBtnTapped() {
         if self.uploadedImageCnt > 4 { return }
         
-        let actionSheet = UIAlertController()
+        // 이미지 배열 재설정
+        self.images = []
         
+        // 사진 다중 선택 위한 ImagePickerController 생성 및 설정
+        let imagePicker = ImagePickerController()
+        imagePicker.settings.selection.max = 5 - self.uploadedImageCnt
+        imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
+        print("imagePicker.settings.selection.max -> \(imagePicker.settings.selection.max)")
+
+        let actionSheet = UIAlertController()
         actionSheet.addAction(UIAlertAction(title: "사진 촬영", style: .default, handler: { UIAlertAction in
-            self.imagePicker.sourceType = .camera
-            self.present(self.imagePicker, animated: true)
+            // UIImagePickerController
+            self.imageShooter.sourceType = .camera
+            self.present(self.imageShooter, animated: true)
         }))
         actionSheet.addAction(UIAlertAction(title: "사진 선택", style: .default, handler: { UIAlertAction in
-            //self.imagePicker.sourceType = .photoLibrary
-            //self.present(self.imagePicker, animated: true)
-            
-            // 사진 여러장 선택할 수 있게..
-            self.present(self.PHPicker, animated: true)
+            // ImagePickerController(외부 라이브러리 사용)
+            self.presentImagePicker(imagePicker, select: { (asset) in
+                // User selected an asset. Do something with it. Perhaps begin processing/upload?
+            }, deselect: { (asset) in
+                // User deselected an asset. Cancel whatever you did when asset was selected.
+            }, cancel: { (assets) in
+                // User canceled selection.
+            }, finish: { (assets) in
+                // User finished selection assets.
+                self.addImagesToCollectionView(assets)
+            })
         }))
         actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
         
         self.present(actionSheet, animated: true)
+    }
+    private func addImagesToCollectionView(_ assets: [PHAsset]) {
+        if assets.count == 0 { return }
+
+        for i in 0..<assets.count {
+            let imageManager = PHImageManager.default()
+            let option = PHImageRequestOptions()
+            option.isSynchronous = true
+            var thumbnail = UIImage()
+            
+            imageManager.requestImage(for: assets[i],
+                                      targetSize: CGSize(width: 100, height: 2100),
+                                      contentMode: .aspectFit,
+                                      options: option) { (result, info) in
+                thumbnail = result!
+            }
+            
+            let data = thumbnail.jpegData(compressionQuality: 0.7)
+            let newImage = UIImage(data: data!)
+            
+            self.images.append(newImage! as UIImage)
+        }
+        self.uploadedImageCnt = assets.count
+        
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+            self.selectPhotoBtn.setTitle("\(self.uploadedImageCnt)/5", for: .normal)
+            print("self.uploadedImageCnt-> \(self.uploadedImageCnt)")
+        }
     }
     
     
@@ -241,6 +268,7 @@ class CreateItemViewController: UIViewController {
         super.viewDidLoad()
 
         setUI()
+        setBSImagePicker()
         setAddSubview()
         setConstraints()
     }
@@ -254,10 +282,14 @@ class CreateItemViewController: UIViewController {
         iNameTextfield.delegate = self
         priceTextfield.delegate = self
         descriptionTextView.delegate = self
-        PHPicker.delegate = self
         
         collectionView.delegate = self
         collectionView.dataSource = self
+    }
+    
+    private func setBSImagePicker() {
+        
+        
     }
     
     private func setAddSubview() {
@@ -313,7 +345,7 @@ class CreateItemViewController: UIViewController {
         collectionView.snp.makeConstraints {
             $0.height.equalTo(100)
             $0.centerY.equalTo(topView.snp.centerY)
-            $0.left.equalTo(selectPhotoBtn.snp.right)
+            $0.left.equalTo(selectPhotoBtn.snp.right).inset(3)
             $0.right.equalTo(topView.snp.right)
         }
         
@@ -372,6 +404,13 @@ extension CreateItemViewController: UIImagePickerControllerDelegate, UINavigatio
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
 
             self.uploadedImageCnt += 1
+            self.images.append(image)
+            
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+                self.selectPhotoBtn.setTitle("\(self.uploadedImageCnt)/5", for: .normal)
+                print("self.uploadedImageCnt-> \(self.uploadedImageCnt)")
+            }
             
 //            // UI 설정
 //            DispatchQueue.main.async {
@@ -399,36 +438,10 @@ extension CreateItemViewController: UIImagePickerControllerDelegate, UINavigatio
 //                
 //                //contentSize 속성 설정, 이미지뷰 동적 생성 시 필요
 //                self.imageScrollView.contentSize.width = 105 * CGFloat(self.uploadedImageCnt+1)
-//                
-//                // 바튼 레이블 설정
-//                self.selectPhotoBtn.setTitle("\(self.uploadedImageCnt)/5", for: .normal)
 //            }
             
             picker.dismiss(animated: true, completion: nil)
         }
-    }
-    
-}
-
-extension CreateItemViewController: PHPickerViewControllerDelegate {
-    
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        picker.dismiss(animated: true)
-        
-        // Picker의 작업이 끝난 후, 새로 만들어질 selections을 담을 변수를 생성
-        var newSelections = [String: PHPickerResult]()
-        
-        for result in results {
-            let identifier = result.assetIdentifier!
-            // ⭐️ 여기는 WWDC에서 3분 부분을 참고 (Picker의 사진의 저장 방식)
-            newSelections[identifier] = selections[identifier] ?? result
-        }
-        
-        // selections에 새로 만들어진 newSelection을 넣어줍시다.
-        selections = newSelections
-        // Picker에서 선택한 이미지의 Identifier들을 저장 (assetIdentifier은 옵셔널 값이라서 compactMap 받음)
-        // 위의 PHPickerConfiguration에서 사용하기 위해서 입니다.
-        selectedAssetIdentifiers = results.compactMap { $0.assetIdentifier }
     }
     
 }
@@ -442,14 +455,14 @@ extension CreateItemViewController: UICollectionViewDelegate {
 extension CreateItemViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        5
+        return images.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: K.itemCellID, for: indexPath) as? ItemImageCollectionViewCell else {
             fatalError("Failed to load cell!")
         }
-        cell.setupCell(img: nil)
+        cell.setupCell(img: self.images[indexPath.row])
         return cell
     }
     
