@@ -9,6 +9,8 @@ import UIKit
 
 class ItemImageCollectionViewCell: UICollectionViewCell {
     
+    var btnEvent: (() -> Void) = {}
+    
     // MARK: - UI elements
     private let pImageView: UIImageView = {
         let imageView = UIImageView()
@@ -18,7 +20,7 @@ class ItemImageCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    private let deleteBtn: UIButton = {
+    private lazy var deleteBtn: UIButton = {
         let btn = UIButton()
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
         let image = UIImage(systemName: "xmark", withConfiguration: imageConfig)
@@ -27,9 +29,15 @@ class ItemImageCollectionViewCell: UICollectionViewCell {
         btn.layer.cornerRadius = 10
         btn.layer.borderWidth = 2
         btn.layer.borderColor = UIColor.black.cgColor
+        btn.backgroundColor = .white
         btn.tintColor = .black
+        btn.addTarget(self, action: #selector(didSelectDeleteBtn), for: .touchUpInside)
         return btn
     }()
+    
+    @objc private func didSelectDeleteBtn() {
+        btnEvent()
+    }
     
     public func setupCell(img: UIImage?) {
         pImageView.image = img

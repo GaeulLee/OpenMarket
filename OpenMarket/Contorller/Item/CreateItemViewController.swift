@@ -184,26 +184,24 @@ class CreateItemViewController: UIViewController {
     }
 
     @objc private func closeBtnTapped() {
-        print("closeBtnTapped")
         self.presentingViewController?.dismiss(animated: true)
     }
-    
-    @objc private func selectPictureViewTapped(_ gesture: UITapGestureRecognizer) {
-        print("selectPictureViewTapped")
-    }
-    
+
     @objc private func selectPhotoBtnTapped() {
-        if self.uploadedImageCnt > 4 { return }
-        
-        // 이미지 배열 재설정
-        self.images = []
+        if self.images.count > 4 { 
+            let alert = UIAlertController(title: "알림", message: "업로드 가능한 이미지 갯수를 초과했습니다.", preferredStyle: .alert) // alert(set title, message, style)
+            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil) // make button and event
+            alert.addAction(confirm) // add to alert
+            present(alert, animated: true, completion: nil)
+            return
+        }
         
         // 사진 다중 선택 위한 ImagePickerController 생성 및 설정
         let imagePicker = ImagePickerController()
-        imagePicker.settings.selection.max = 5 - self.uploadedImageCnt
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
-        print("imagePicker.settings.selection.max -> \(imagePicker.settings.selection.max)")
+        imagePicker.settings.selection.max = 5 - self.images.count
 
+        // 사진 촬영, 사진 선택 중 업로드 방식 action sheet로 물어보기
         let actionSheet = UIAlertController()
         actionSheet.addAction(UIAlertAction(title: "사진 촬영", style: .default, handler: { UIAlertAction in
             // UIImagePickerController
@@ -220,41 +218,38 @@ class CreateItemViewController: UIViewController {
                 // User canceled selection.
             }, finish: { (assets) in
                 // User finished selection assets.
-                self.addImagesToCollectionView(assets)
+                if assets.count == 0 { return }
+                
+                // 선택된 asset을 image 타입으로 변환
+                for i in 0..<assets.count {
+                    let imageManager = PHImageManager.default()
+                    let option = PHImageRequestOptions()
+                    option.isSynchronous = true
+                    var thumbnail = UIImage()
+                    
+                    imageManager.requestImage(for: assets[i],
+                                              targetSize: CGSize(width: 100, height: 2100),
+                                              contentMode: .aspectFit,
+                                              options: option) { (result, info) in
+                        thumbnail = result!
+                    }
+                    
+                    let data = thumbnail.jpegData(compressionQuality: 0.7)
+                    let newImage = UIImage(data: data!)
+                    
+                    self.images.append(newImage! as UIImage)
+                }
+                
+                // collectionView reload
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                    self.selectPhotoBtn.setTitle("\(self.images.count)/5", for: .normal)
+                }
             })
         }))
         actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
         
         self.present(actionSheet, animated: true)
-    }
-    private func addImagesToCollectionView(_ assets: [PHAsset]) {
-        if assets.count == 0 { return }
-
-        for i in 0..<assets.count {
-            let imageManager = PHImageManager.default()
-            let option = PHImageRequestOptions()
-            option.isSynchronous = true
-            var thumbnail = UIImage()
-            
-            imageManager.requestImage(for: assets[i],
-                                      targetSize: CGSize(width: 100, height: 2100),
-                                      contentMode: .aspectFit,
-                                      options: option) { (result, info) in
-                thumbnail = result!
-            }
-            
-            let data = thumbnail.jpegData(compressionQuality: 0.7)
-            let newImage = UIImage(data: data!)
-            
-            self.images.append(newImage! as UIImage)
-        }
-        self.uploadedImageCnt = assets.count
-        
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-            self.selectPhotoBtn.setTitle("\(self.uploadedImageCnt)/5", for: .normal)
-            print("self.uploadedImageCnt-> \(self.uploadedImageCnt)")
-        }
     }
     
     
@@ -268,7 +263,6 @@ class CreateItemViewController: UIViewController {
         super.viewDidLoad()
 
         setUI()
-        setBSImagePicker()
         setAddSubview()
         setConstraints()
     }
@@ -282,14 +276,8 @@ class CreateItemViewController: UIViewController {
         iNameTextfield.delegate = self
         priceTextfield.delegate = self
         descriptionTextView.delegate = self
-        
-        collectionView.delegate = self
         collectionView.dataSource = self
-    }
-    
-    private func setBSImagePicker() {
-        
-        
+        imageShooter.delegate = self
     }
     
     private func setAddSubview() {
@@ -345,19 +333,16 @@ class CreateItemViewController: UIViewController {
         collectionView.snp.makeConstraints {
             $0.height.equalTo(100)
             $0.centerY.equalTo(topView.snp.centerY)
-            $0.left.equalTo(selectPhotoBtn.snp.right).inset(3)
+            $0.left.equalTo(selectPhotoBtn.snp.right).inset(-3)
             $0.right.equalTo(topView.snp.right)
         }
-        
-        
+             
         iNameTextfield.snp.makeConstraints {
             $0.top.equalTo(topView.snp.bottom).inset(-10)
             $0.width.equalTo(entireStackView.snp.width).inset(10)
             $0.centerX.equalTo(entireStackView.snp.centerX)
             $0.height.equalTo(45)
         }
-        
-        
         
         priceTextfield.snp.makeConstraints {
             $0.top.equalTo(iNameTextfield.snp.bottom).inset(-10)
@@ -402,43 +387,12 @@ extension CreateItemViewController: UIImagePickerControllerDelegate, UINavigatio
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-
-            self.uploadedImageCnt += 1
             self.images.append(image)
             
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
-                self.selectPhotoBtn.setTitle("\(self.uploadedImageCnt)/5", for: .normal)
-                print("self.uploadedImageCnt-> \(self.uploadedImageCnt)")
+                self.selectPhotoBtn.setTitle("\(self.images.count)/5", for: .normal)
             }
-            
-//            // UI 설정
-//            DispatchQueue.main.async {
-//                // 새로운 이미지 뷰 만들고
-//                let view = UIImageView()
-//                view.backgroundColor = .backColor
-//                view.layer.cornerRadius = 10
-//                view.clipsToBounds = true
-//                view.layer.borderWidth = 1
-//                view.layer.borderColor = UIColor.lightGray.cgColor
-//                view.image = image
-//                
-//                self.view.addSubview(view) // 뷰에 추가!!
-//                view.snp.makeConstraints { // 레이아웃 설정
-//                    $0.width.height.equalTo(100)
-//                    $0.centerY.equalTo(self.imageScrollView.snp.centerY)
-//
-//                    print("self.uploadedImageCnt-> \(self.uploadedImageCnt)")
-//                    if self.uploadedImageCnt == 1 {
-//                        $0.left.equalTo(self.selectPhotoBtn.snp.right).inset(-5)
-//                    } else {
-//                        $0.left.equalTo(self.selectPhotoBtn.snp.right).inset(-(105 * CGFloat(self.uploadedImageCnt-1)) - 5)
-//                    }
-//                }
-//                
-//                //contentSize 속성 설정, 이미지뷰 동적 생성 시 필요
-//                self.imageScrollView.contentSize.width = 105 * CGFloat(self.uploadedImageCnt+1)
-//            }
             
             picker.dismiss(animated: true, completion: nil)
         }
@@ -446,12 +400,7 @@ extension CreateItemViewController: UIImagePickerControllerDelegate, UINavigatio
     
 }
 
-extension CreateItemViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath.row)
-        
-    }
-}
+
 extension CreateItemViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -463,6 +412,15 @@ extension CreateItemViewController: UICollectionViewDataSource {
             fatalError("Failed to load cell!")
         }
         cell.setupCell(img: self.images[indexPath.row])
+        cell.btnEvent = {
+            print("\(indexPath.row)th image")
+            self.images.remove(at: indexPath.row)
+            
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+                self.selectPhotoBtn.setTitle("\(self.images.count)/5", for: .normal)
+            }
+        }
         return cell
     }
     
