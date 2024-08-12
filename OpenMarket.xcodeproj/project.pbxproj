@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		16BBA31F797F445D2BB94EC5 /* libPods-OpenMarket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABEF94E4DE58C07482EF1C2B /* libPods-OpenMarket.a */; };
 		9B3CF0DE2C3BFC0F00629B5D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF0DD2C3BFC0F00629B5D /* AppDelegate.swift */; };
 		9B3CF0E02C3BFC0F00629B5D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF0DF2C3BFC0F00629B5D /* SceneDelegate.swift */; };
 		9B3CF0E22C3BFC0F00629B5D /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF0E12C3BFC0F00629B5D /* LoginViewController.swift */; };
@@ -30,10 +29,13 @@
 		9B3CF1142C5116CF00629B5D /* Member.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1132C5116CF00629B5D /* Member.swift */; };
 		9B3CF1162C5116DD00629B5D /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1152C5116DD00629B5D /* Item.swift */; };
 		9B3CF1182C6106CE00629B5D /* ItemImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1172C6106CE00629B5D /* ItemImageCollectionViewCell.swift */; };
+		9B3CF11A2C6A13D200629B5D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9B3CF1192C6A13D200629B5D /* GoogleService-Info.plist */; };
+		C84FBEABF70C68C853C8DAAB /* Pods_OpenMarket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 223961D2AB60054D9819530F /* Pods_OpenMarket.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		11EB5B8B7DB1CF7EA52E9716 /* Pods-OpenMarket.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OpenMarket.release.xcconfig"; path = "Target Support Files/Pods-OpenMarket/Pods-OpenMarket.release.xcconfig"; sourceTree = "<group>"; };
+		223961D2AB60054D9819530F /* Pods_OpenMarket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OpenMarket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		798A3F75075A054D3EA61860 /* Pods-OpenMarket.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OpenMarket.debug.xcconfig"; path = "Target Support Files/Pods-OpenMarket/Pods-OpenMarket.debug.xcconfig"; sourceTree = "<group>"; };
 		9B3CF0DA2C3BFC0F00629B5D /* OpenMarket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenMarket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B3CF0DD2C3BFC0F00629B5D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -59,7 +61,7 @@
 		9B3CF1132C5116CF00629B5D /* Member.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Member.swift; sourceTree = "<group>"; };
 		9B3CF1152C5116DD00629B5D /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		9B3CF1172C6106CE00629B5D /* ItemImageCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemImageCollectionViewCell.swift; sourceTree = "<group>"; };
-		ABEF94E4DE58C07482EF1C2B /* libPods-OpenMarket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OpenMarket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9B3CF1192C6A13D200629B5D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,7 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16BBA31F797F445D2BB94EC5 /* libPods-OpenMarket.a in Frameworks */,
+				C84FBEABF70C68C853C8DAAB /* Pods_OpenMarket.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,7 +79,7 @@
 		3D94F93FE17DCC6126DBEBB0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				ABEF94E4DE58C07482EF1C2B /* libPods-OpenMarket.a */,
+				223961D2AB60054D9819530F /* Pods_OpenMarket.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -120,6 +122,7 @@
 				9B3CF0F12C3D512D00629B5D /* Contorller */,
 				9B3CF0E62C3BFC1000629B5D /* Assets.xcassets */,
 				9B3CF0EB2C3BFC1000629B5D /* Info.plist */,
+				9B3CF1192C6A13D200629B5D /* GoogleService-Info.plist */,
 			);
 			path = OpenMarket;
 			sourceTree = "<group>";
@@ -248,6 +251,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B3CF0EA2C3BFC1000629B5D /* LaunchScreen.storyboard in Resources */,
+				9B3CF11A2C6A13D200629B5D /* GoogleService-Info.plist in Resources */,
 				9B3CF0E72C3BFC1000629B5D /* Assets.xcassets in Resources */,
 				9B3CF0E52C3BFC0F00629B5D /* Main.storyboard in Resources */,
 			);

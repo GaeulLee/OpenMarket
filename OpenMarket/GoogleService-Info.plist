@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBhszZFEGbqlCD8Z0dPoaercFtcQaLnxg0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>594085734953</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.gaeul.OpenMarket</string>
+	<key>PROJECT_ID</key>
+	<string>openmarket-c1952</string>
+	<key>STORAGE_BUCKET</key>
+	<string>openmarket-c1952.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:594085734953:ios:a55e9462093ebd2d64ca38</string>
+</dict>
+</plist>

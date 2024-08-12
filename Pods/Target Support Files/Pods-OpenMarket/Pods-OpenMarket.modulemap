@@ -1,4 +1,4 @@
-module Pods_OpenMarket {
+framework module Pods_OpenMarket {
   umbrella header "Pods-OpenMarket-umbrella.h"
 
   export *

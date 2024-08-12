@@ -1,4 +1,4 @@
-module BSImagePicker {
+framework module BSImagePicker {
   umbrella header "BSImagePicker-umbrella.h"
 
   export *
