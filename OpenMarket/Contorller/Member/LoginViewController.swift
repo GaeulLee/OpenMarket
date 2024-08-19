@@ -204,7 +204,7 @@ class LoginViewController: UIViewController {
     
     @objc func signInBtnTapped() {
         print("signInBtn clicked")
-        let vc = SignInViewController()
+        let vc = SignUpViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
     

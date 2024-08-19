@@ -8,7 +8,6 @@
 import Foundation
 
 struct Member {
-    let memberNo: Int
     let memberID: String
     let memberPW: String
     let memberName: String

@@ -13,12 +13,15 @@ import SnapKit
 import SwiftUI
 struct SignInViewController_Preview: PreviewProvider {
     static var previews: some View {
-        SignInViewController().toPreview()
+        SignUpViewController().toPreview()
     }
 }
 #endif
 
-class SignInViewController: UIViewController {
+class SignUpViewController: UIViewController {
+
+    // MARK: - Property
+    var fStoreManager = FirestoreManager.shared
 
     // MARK: - UI Components
     private let idTextfield: UITextField = {
@@ -127,6 +130,9 @@ class SignInViewController: UIViewController {
     // MARK: - objc
     @objc private func joinBtnTapped() {
         print("joinBtnTapped")
+        var member = Member(memberID: "abc", memberPW: "123", memberName: "test", memberNickname: "test123", memberEmail: "email")
+        fStoreManager.createMember(member) // success
+        
     }
 
     

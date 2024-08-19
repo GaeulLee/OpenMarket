@@ -35,6 +35,8 @@ class CreateItemViewController: UIViewController {
     private var images: [UIImage] = [] // 선택된 이미지를 담을 배열
     private let imageShooter = UIImagePickerController() // 촬영사진 사용
     
+    var fStoreManager = FirestoreManager.shared
+    
     
     // MARK: - UI element
     private let selectPhotoBtn: UIButton = {
@@ -181,6 +183,8 @@ class CreateItemViewController: UIViewController {
     // MARK: - objc
     @objc private func createItemBtnTapped() {
         print("createItemBtnTapped")
+        var item = Item(itemName: "item", itemPrice: "100,000", description: "test /n test", date: "2024-08-19", memberID: "abc", itemImage: ["test"])
+        fStoreManager.createItem(newItem: item) // success
     }
 
     @objc private func closeBtnTapped() {
