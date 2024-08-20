@@ -130,9 +130,17 @@ class SignUpViewController: UIViewController {
     // MARK: - objc
     @objc private func joinBtnTapped() {
         print("joinBtnTapped")
-        var member = Member(memberID: "abc", memberPW: "123", memberName: "test", memberNickname: "test123", memberEmail: "email")
-        fStoreManager.createMember(member) // success
         
+        if idTextfield.text != "", pwTextfield.text != "", pwCheckTextfield.text != "",
+           nameTextfield.text != "", nickNameTextfield.text != "", emailTextfield.text != "" {
+            
+            var member = Member(memberID: idTextfield.text!,
+                                memberPW: pwTextfield.text!,
+                                memberName: nameTextfield.text!,
+                                memberNickname: nickNameTextfield.text!,
+                                memberEmail: emailTextfield.text!)
+            fStoreManager.createMember(member) // success
+        }
     }
 
     
