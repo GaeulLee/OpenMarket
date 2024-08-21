@@ -20,6 +20,10 @@ struct LoginViewController_Preview: PreviewProvider {
 
 
 class LoginViewController: UIViewController {
+    
+    // MARK: - property
+    var fStoreMananger = FirestoreManager.shared
+
     // MARK: - UI Components
     
     // ID
@@ -159,35 +163,9 @@ class LoginViewController: UIViewController {
     @objc func loginBtnTapped() {
         print("loginBtn clicked")
         
-        // 탭바컨트롤러 생성
-        let tabBarVC = UITabBarController()
-        
-        // 첫번째 화면은 네비게이션컨트롤러로 만들기 (기본루트뷰 설정)
-        let vc1 = UINavigationController(rootViewController: HomeViewController())
-        let vc2 = UINavigationController(rootViewController: MyPageViewController())
-        
-        // 탭바 이름들 설정
-        vc1.title = "Home"
-        vc2.title = "My page"
-        
-        // 탭바로 사용하기 위한 뷰 컨트롤러들 설정
-        tabBarVC.setViewControllers([vc1, vc2], animated: false)
-        tabBarVC.modalPresentationStyle = .fullScreen
-        
-        let appearance = UITabBarAppearance()
-        appearance.configureWithTransparentBackground()
-        tabBarVC.tabBar.backgroundColor = .backColor
-        tabBarVC.tabBar.tintColor = .btnColor
-        tabBarVC.tabBar.standardAppearance = appearance
-        tabBarVC.tabBar.scrollEdgeAppearance = appearance
-        
-        // 탭바 이미지 설정
-        guard let items = tabBarVC.tabBar.items else { return }
-        items[0].image = UIImage(systemName: "house.fill")
-        items[1].image = UIImage(systemName: "person.fill")
-        
-        // 프리젠트로 탭바를 띄우기
-        present(tabBarVC, animated: true, completion: nil)
+        if idTextfield.text != "", pwTextfield.text != "" {
+            fStoreMananger.login(id: idTextfield.text!, pw: pwTextfield.text!)
+        }
     }
     
     @objc func findIDBtnTapped() {
@@ -232,6 +210,7 @@ class LoginViewController: UIViewController {
         
         idTextfield.delegate = self
         pwTextfield.delegate = self
+        fStoreMananger.delegate = self
     }
     
     private func setNavigationBar() {
@@ -331,6 +310,50 @@ class LoginViewController: UIViewController {
             make.right.equalTo(bottomLineView.snp.right).inset(4)
         }
     }
+}
+
+// MARK: - FirestoreManagerDelegate
+extension LoginViewController: FirestoreManagerDelegate {
+    
+    func loginSuccessed() {
+        // 탭바컨트롤러 생성
+        let tabBarVC = UITabBarController()
+        
+        // 첫번째 화면은 네비게이션컨트롤러로 만들기 (기본루트뷰 설정)
+        let vc1 = UINavigationController(rootViewController: HomeViewController())
+        let vc2 = UINavigationController(rootViewController: MyPageViewController())
+        
+        // 탭바 이름들 설정
+        vc1.title = "Home"
+        vc2.title = "My page"
+        
+        // 탭바로 사용하기 위한 뷰 컨트롤러들 설정
+        tabBarVC.setViewControllers([vc1, vc2], animated: false)
+        tabBarVC.modalPresentationStyle = .fullScreen
+        
+        let appearance = UITabBarAppearance()
+        appearance.configureWithTransparentBackground()
+        tabBarVC.tabBar.backgroundColor = .backColor
+        tabBarVC.tabBar.tintColor = .btnColor
+        tabBarVC.tabBar.standardAppearance = appearance
+        tabBarVC.tabBar.scrollEdgeAppearance = appearance
+        
+        // 탭바 이미지 설정
+        guard let items = tabBarVC.tabBar.items else { return }
+        items[0].image = UIImage(systemName: "house.fill")
+        items[1].image = UIImage(systemName: "person.fill")
+        
+        // 프리젠트로 탭바를 띄우기
+        present(tabBarVC, animated: true, completion: nil)
+    }
+    
+    func loginFailed() {
+        let sheet = UIAlertController(title: "로그인 실패", message: "아이디 또는 비밀번호를 확인해주세요.", preferredStyle: .alert)
+        sheet.addAction(UIAlertAction(title: "확인", style: .default))
+        present(sheet, animated: true)
+    }
+    
+    
 }
 
 
