@@ -133,13 +133,12 @@ class SignUpViewController: UIViewController {
         
         if idTextfield.text != "", pwTextfield.text != "", pwCheckTextfield.text != "",
            nameTextfield.text != "", nickNameTextfield.text != "", emailTextfield.text != "" {
-            
             var member = Member(memberID: idTextfield.text!,
                                 memberPW: pwTextfield.text!,
                                 memberName: nameTextfield.text!,
                                 memberNickname: nickNameTextfield.text!,
                                 memberEmail: emailTextfield.text!)
-            fStoreManager.createMember(member) // success
+            fStoreManager.createMember(member)
         }
     }
 
@@ -161,8 +160,10 @@ class SignUpViewController: UIViewController {
     
     // MARK: - private
     private func setUI() {
-        self.view.backgroundColor = .systemBackground
+        self.view.backgroundColor = .backColor
         self.title = "회원가입"
+        
+        fStoreManager.memberDelegate = self
     }
 
     private func setStackView() {
@@ -218,3 +219,20 @@ class SignUpViewController: UIViewController {
     }
 
 }
+
+
+// MARK: - FirestoreManagerDelegate
+extension SignUpViewController: FirestoreManagerMemberDelegate {
+    
+    func signUpSuccessed() {
+        let sheet = UIAlertController(title: "회원가입 성공", message: "회원가입에 성공했습니다. 로그인 화면으로 돌아갑니다.", preferredStyle: .alert)
+        sheet.addAction(UIAlertAction(title: "확인", style: .default, handler: { UIAlertAction in
+            self.navigationController?.popToRootViewController(animated: true)
+        }))
+//        let sheet = UIAlertController(title: "회원가입 성공", message: "회원가입에 성공했습니다. 가입한 계정으로 로그인해주세요. ", preferredStyle: .alert)
+//        sheet.addAction(UIAlertAction(title: "확인", style: .default))
+        present(sheet, animated: true)
+    }
+    
+}
+

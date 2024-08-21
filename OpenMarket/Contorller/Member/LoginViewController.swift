@@ -210,7 +210,7 @@ class LoginViewController: UIViewController {
         
         idTextfield.delegate = self
         pwTextfield.delegate = self
-        fStoreMananger.delegate = self
+        fStoreMananger.loginDelegate = self
     }
     
     private func setNavigationBar() {
@@ -313,9 +313,9 @@ class LoginViewController: UIViewController {
 }
 
 // MARK: - FirestoreManagerDelegate
-extension LoginViewController: FirestoreManagerDelegate {
-    
-    func loginSuccessed() {
+extension LoginViewController: FirestoreManagerLoginDelegate {
+ 
+    func loginSuccessed(_ loggedInMember: Member) {
         // 탭바컨트롤러 생성
         let tabBarVC = UITabBarController()
         
@@ -345,6 +345,9 @@ extension LoginViewController: FirestoreManagerDelegate {
         
         // 프리젠트로 탭바를 띄우기
         present(tabBarVC, animated: true, completion: nil)
+        
+        // 로그인한 유저 정보 어떻게 넘길 것인가
+        self.fStoreMananger.setMemberInfo(loggedInMember)
     }
     
     func loginFailed() {
@@ -352,7 +355,6 @@ extension LoginViewController: FirestoreManagerDelegate {
         sheet.addAction(UIAlertAction(title: "확인", style: .default))
         present(sheet, animated: true)
     }
-    
     
 }
 

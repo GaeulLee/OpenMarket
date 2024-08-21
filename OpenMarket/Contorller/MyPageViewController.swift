@@ -24,6 +24,8 @@ class MyPageViewController: UIViewController {
     // db 연결 전 임시 데이터
     var items: [Item] = [ Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller2", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["sample1", "sample2", "sample3"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller2", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["sample1", "sample2", "sample3"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller2", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["sample1", "sample2", "sample3"])]
     
+    var fStoreManager = FirestoreManager.shared
+    
     // MARK: - UI element
     private let nameLabel1: UILabel = {
         let label = UILabel()
@@ -181,10 +183,21 @@ class MyPageViewController: UIViewController {
         setNavigationBar()
         setAddSubview()
         setConstraints()
+        
+        test()
     }
     
     
     // MARK: - private
+    
+    func test() {
+        let member = fStoreManager.getMemberInfo()
+        
+        nameLabel2.text = member.memberName
+        nicknameLabel2.text = member.memberNickname
+    }
+    
+    
     private func setUI() {
         self.title = "My Page"
         self.view.backgroundColor = .backColor

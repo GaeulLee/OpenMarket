@@ -93,7 +93,7 @@ class ModifyPWViewController: UIViewController {
 
     // MARK: - private
     private func setUI() {
-        self.view.backgroundColor = .systemBackground
+        self.view.backgroundColor = .backColor
         self.title = "비밀번호 수정"
     }
 

@@ -8,24 +8,30 @@
 import Foundation
 import FirebaseFirestore
 
-protocol FirestoreManagerDelegate {
-    // 가입 성공
-    // 가입 실패
-    // 중복 데이터
-    // 일반 에러
-    
-    func loginSuccessed()
+protocol FirestoreManagerLoginDelegate {
+    func loginSuccessed(_ loggedInMember: Member)
     func loginFailed()
 }
 
+protocol FirestoreManagerMemberDelegate {
+    func signUpSuccessed()
+}
+
+protocol FirestoreManagerErrorDelegate {
+    // 중복 데이터
+    // 일반 에러
+}
 
 final class FirestoreManager {
     
     static let shared = FirestoreManager()
     private init() {}
     
-    var delegate: FirestoreManagerDelegate?
+    var loginDelegate: FirestoreManagerLoginDelegate?
+    var memberDelegate: FirestoreManagerMemberDelegate?
+    var errorDelegate: FirestoreManagerErrorDelegate?
     
+    private var savedMemberInfo: Member?
     let db = Firestore.firestore()
     
     // ========================================== login
@@ -37,22 +43,37 @@ final class FirestoreManager {
                 print(error.localizedDescription)
                 return
             } else {
-                // success
-                if qs!.documents.isEmpty {
-                    print("로그인 실패")
-                    self.delegate?.loginFailed()
-                
-                } else {
+                if let snapshotDoc = qs?.documents {
+                    let data = snapshotDoc[0].data()
+                    if let id = data[K.DB.MemberField.Id] as? String,
+                       let pw = data[K.DB.MemberField.Pw] as? String,
+                       let name = data[K.DB.MemberField.Name] as? String,
+                       let nickname = data[K.DB.MemberField.Nickname] as? String,
+                       let email = data[K.DB.MemberField.Email] as? String {
+                        let loggedInMember = Member(memberID: id, memberPW: pw, memberName: name, memberNickname: nickname, memberEmail: email)
+                        self.loginDelegate?.loginSuccessed(loggedInMember)
+                    }
                     print("로그인 성공")
-                    self.delegate?.loginSuccessed()
+                } else {
+                    self.loginDelegate?.loginFailed()
+                    print("로그인 실패")
                 }
             }
         }
     }
     
+    public func setMemberInfo(_ member: Member) {
+        self.savedMemberInfo = member
+        print(member)
+    }
+    
+    public func getMemberInfo() -> Member {
+        return savedMemberInfo!
+    }
+    
     // ========================================== member
     // create
-    public func checkDuplication(with: String, fieldName: String) -> Bool {
+    public func checkDuplication(with: String, fieldName: String) -> Bool { // 회원가입 뷰 변경해야 함(아이디, 닉네임 중복 확인 버튼 추가)
         var result = false
         
         let query = db.collection(K.DB.collectionName).whereField(fieldName, isEqualTo: with)
@@ -90,6 +111,7 @@ final class FirestoreManager {
             } else {
                 // success
                 print("\(newMember.memberID) added")
+                self.memberDelegate?.signUpSuccessed()
             }
         }
     }

@@ -107,7 +107,7 @@ class FindPWViewController: UIViewController {
 
     // MARK: - private
     private func setUI() {
-        self.view.backgroundColor = .systemBackground
+        self.view.backgroundColor = .backColor
         self.title = "PW 찾기"
     }
 
