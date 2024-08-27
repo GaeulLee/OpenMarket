@@ -27,11 +27,16 @@ class MyPageViewController: UIViewController {
     var fStoreManager = FirestoreManager.shared
     
     // MARK: - UI element
+    lazy var optionButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: self, action: #selector(optionButtonTapped))
+        return button
+    }()
+    
     private let nameLabel1: UILabel = {
         let label = UILabel()
         label.text = "이름"
         label.font = .systemFont(ofSize: 16, weight: .bold)
-        label.textColor = .lightGray
+        label.textColor = .defaultFontColor
         return label
     }()
     
@@ -39,7 +44,7 @@ class MyPageViewController: UIViewController {
         let label = UILabel()
         label.text = "이름 테스트"
         label.font = .systemFont(ofSize: 16, weight: .bold)
-        label.textColor = .lightGray
+        label.textColor = .defaultFontColor
         return label
     }()
     
@@ -47,7 +52,7 @@ class MyPageViewController: UIViewController {
         let label = UILabel()
         label.text = "닉네임"
         label.font = .systemFont(ofSize: 16, weight: .bold)
-        label.textColor = .lightGray
+        label.textColor = .defaultFontColor
         return label
     }()
     
@@ -55,47 +60,8 @@ class MyPageViewController: UIViewController {
         let label = UILabel()
         label.text = "닉네임 테스트"
         label.font = .systemFont(ofSize: 16, weight: .bold)
-        label.textColor = .lightGray
+        label.textColor = .defaultFontColor
         return label
-    }()
-    
-    private let changeNicknameBtn: UIButton = {
-        let btn = UIButton()
-        btn.setTitle("변경", for: .normal)
-        btn.setTitleColor(.systemBackground, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
-        btn.backgroundColor = .btnColor
-        btn.layer.masksToBounds = true
-        btn.layer.cornerRadius = 7
-        btn.addTarget(self, action: #selector(changeNicknameBtnTapped), for: .touchUpInside)
-        return btn
-    }()
-    
-    private let changePWBtn: UIButton = {
-        let btn = UIButton()
-        btn.setTitle("비밀번호 변경", for: .normal)
-        btn.setTitleColor(.defaultFontColor, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .regular)
-        btn.addTarget(self, action: #selector(changePWTapped), for: .touchUpInside)
-        return btn
-    }()
-    
-    private let logoutBtn: UIButton = {
-        let btn = UIButton()
-        btn.setTitle("로그아웃", for: .normal)
-        btn.setTitleColor(.defaultFontColor, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .regular)
-        btn.addTarget(self, action: #selector(logOutBtnTapped), for: .touchUpInside)
-        return btn
-    }()
-    
-    private let signoutBtn: UIButton = {
-        let btn = UIButton()
-        btn.setTitle("회원탈퇴", for: .normal)
-        btn.setTitleColor(.defaultFontColor, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .regular)
-        btn.addTarget(self, action: #selector(signoutBtnTapped), for: .touchUpInside)
-        return btn
     }()
     
     private let tableViewTitleLabel: UILabel = {
@@ -166,12 +132,87 @@ class MyPageViewController: UIViewController {
     
     @objc private func logOutBtnTapped() {
         print("logOutBtnTapped")
-        dismiss(animated: true)
+        
     }
     
     @objc private func signoutBtnTapped() {
         print("signoutBtnTapped")
     }
+    
+    @objc private func optionButtonTapped() {
+        let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        // 닉네임 변경
+        sheet.addAction(UIAlertAction(title: "닉네임 변경", style: .default, handler: { action in
+            let alert = UIAlertController(title: "닉네임 변경", message: nil, preferredStyle: .alert)
+            
+            alert.addTextField { tf in
+                tf.placeholder = "변경할 닉네임 입력"
+            }
+            
+            alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { ok in
+                if let nickname = alert.textFields?[0].text {
+                    if nickname != "" {
+                        let id = self.fStoreManager.getMemberInfo().memberID
+                        self.fStoreManager.updateMemberNickname(with: id, to: nickname)
+                    }
+                }
+            }))
+            alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+            self.present(alert, animated: true)
+            
+        }))
+        
+        // 비밀번호 변경
+        sheet.addAction(UIAlertAction(title: "비밀번호 변경", style: .default, handler: { action in
+            let alert = UIAlertController(title: "비밀번호 변경", message: nil, preferredStyle: .alert)
+            
+            alert.addTextField { tf1 in
+                tf1.placeholder = "변경할 비밀번호 입력"
+                tf1.isSecureTextEntry = true
+            }
+            
+            alert.addTextField { tf2 in
+                tf2.placeholder = "비밀번호 확인"
+                tf2.isSecureTextEntry = true
+            }
+            
+            alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { ok in
+                if let tf1 = alert.textFields?[0].text, let tf2 = alert.textFields?[1].text {
+                    if tf1 != "", tf2 != "" {
+                        if tf1 == tf2 {
+                            let id = self.fStoreManager.getMemberInfo().memberID
+                            self.fStoreManager.updateMemberPW(with: id, to: tf1)
+                            
+                            let successAlert = UIAlertController(title: "변경 완료", message: "비밀번호가 성공적으로 변경되었습니다.", preferredStyle: .alert)
+                            successAlert.addAction(UIAlertAction(title: "확인", style: .default))
+                            self.present(successAlert, animated: true)
+                        } else {
+                            let errorAlert = UIAlertController(title: "입력 확인", message: "입력한 두 비밀번호가 일치하지 않습니다.", preferredStyle: .alert)
+                            errorAlert.addAction(UIAlertAction(title: "확인", style: .default))
+                            self.present(errorAlert, animated: true)
+                        }
+                    }
+                    
+                }
+            }))
+            alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+            self.present(alert, animated: true)
+        }))
+        
+        // 탈퇴
+        sheet.addAction(UIAlertAction(title: "회원탈퇴", style: .default))
+        
+        // 로그아웃
+        sheet.addAction(UIAlertAction(title: "로그아웃", style: .destructive, handler: { action in
+            self.fStoreManager.setMemberInfo(nil)
+            self.dismiss(animated: true)
+        }))
+        
+        sheet.addAction(UIAlertAction(title: "취소", style: .cancel))
+        present(sheet, animated: true)
+    }
+    
     
     
     // MARK: - viewDidLoad
@@ -184,13 +225,13 @@ class MyPageViewController: UIViewController {
         setAddSubview()
         setConstraints()
         
-        test()
+        roadData()
     }
     
     
     // MARK: - private
     
-    func test() {
+    func roadData() {
         let member = fStoreManager.getMemberInfo()
         
         nameLabel2.text = member.memberName
@@ -201,6 +242,8 @@ class MyPageViewController: UIViewController {
     private func setUI() {
         self.title = "My Page"
         self.view.backgroundColor = .backColor
+        
+        fStoreManager.memberInfoDelegate = self
     }
     
     private func setNavigationBar() {
@@ -210,6 +253,8 @@ class MyPageViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .defaultFontColor
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        
+        self.navigationItem.rightBarButtonItem = self.optionButton
     }
 
     
@@ -232,14 +277,8 @@ class MyPageViewController: UIViewController {
 
         topUIView.addSubview(leftStackView)
         topUIView.addSubview(rightStackView)
-        topUIView.addSubview(changeNicknameBtn)
-        
-        btnsStackView.addArrangedSubview(changePWBtn)
-        btnsStackView.addArrangedSubview(logoutBtn)
-        btnsStackView.addArrangedSubview(signoutBtn)
-        
+
         entireUIVeiw.addSubview(topUIView)
-        entireUIVeiw.addSubview(btnsStackView)
         entireUIVeiw.addSubview(tableViewTitleLabel)
         entireUIVeiw.addSubview(tableView)
 
@@ -247,13 +286,14 @@ class MyPageViewController: UIViewController {
     
     private func setConstraints() {
         entireUIVeiw.snp.makeConstraints {
-            $0.edges.equalTo(self.view.safeAreaLayoutGuide).inset(10)
+            $0.edges.equalTo(self.view.safeAreaLayoutGuide).inset(0)
         }
         
         topUIView.snp.makeConstraints {
             $0.top.equalTo(entireUIVeiw.snp.top)
             $0.height.equalTo(120)
-            $0.width.equalTo(entireUIVeiw.snp.width)
+            $0.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(5)
+
         }
         leftStackView.snp.makeConstraints {
             $0.top.equalTo(topUIView.snp.top)
@@ -265,22 +305,10 @@ class MyPageViewController: UIViewController {
             $0.left.equalTo(leftStackView.snp.right).inset(-20)
             $0.height.equalTo(topUIView.snp.height)
         }
-        changeNicknameBtn.snp.makeConstraints {
-            $0.right.equalTo(topUIView.snp.right).inset(13)
-            $0.bottom.equalTo(topUIView.snp.bottom).inset(13)
-            $0.width.equalTo(55)
-        }
-        
-        
-        btnsStackView.snp.makeConstraints {
-            $0.top.equalTo(topUIView.snp.bottom).inset(-5)
-            $0.height.equalTo(30)
-            $0.width.equalTo(entireUIVeiw.snp.width)
-        }
         
         tableViewTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(btnsStackView.snp.bottom).inset(-25)
-            $0.width.equalTo(entireUIVeiw.snp.width)
+            $0.top.equalTo(topUIView.snp.bottom).inset(-25)
+            $0.left.equalTo(self.view.safeAreaLayoutGuide).inset(5)
         }
         
         tableView.snp.makeConstraints {
@@ -316,5 +344,14 @@ extension MyPageViewController: UITableViewDelegate {
         vc.item = items[indexPath.row]
         navigationController?.pushViewController(vc, animated: true)
     }
+}
+
+// MARK: - FirestoreManagerMemberInfoDelegate
+extension MyPageViewController: FirestoreManagerMemberInfoDelegate {
+    
+    func changeMemberInfoSuccessed() {
+        roadData()
+    }
+    
 }
 

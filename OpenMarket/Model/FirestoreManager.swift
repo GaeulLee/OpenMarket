@@ -17,6 +17,10 @@ protocol FirestoreManagerMemberDelegate {
     func signUpSuccessed()
 }
 
+protocol FirestoreManagerMemberInfoDelegate {
+    func changeMemberInfoSuccessed()
+}
+
 protocol FirestoreManagerErrorDelegate {
     // 중복 데이터
     // 일반 에러
@@ -29,14 +33,27 @@ final class FirestoreManager {
     
     var loginDelegate: FirestoreManagerLoginDelegate?
     var memberDelegate: FirestoreManagerMemberDelegate?
+    var memberInfoDelegate: FirestoreManagerMemberInfoDelegate?
     var errorDelegate: FirestoreManagerErrorDelegate?
     
     private var savedMemberInfo: Member?
     let db = Firestore.firestore()
     
+    
+    public func setMemberInfo(_ member: Member?) {
+        self.savedMemberInfo = member
+        print(member)
+    }
+    
+    public func getMemberInfo() -> Member {
+        return savedMemberInfo!
+    }
+
+    
     // ========================================== login
     public func login(id: String, pw: String) {
         let query = db.collection(K.DB.collectionName).whereField(K.DB.MemberField.Id, isEqualTo: id).whereField(K.DB.MemberField.Pw, isEqualTo: pw)
+    
         query.getDocuments { qs, error in
             if let error = error {
                 // fail
@@ -61,15 +78,7 @@ final class FirestoreManager {
             }
         }
     }
-    
-    public func setMemberInfo(_ member: Member) {
-        self.savedMemberInfo = member
-        print(member)
-    }
-    
-    public func getMemberInfo() -> Member {
-        return savedMemberInfo!
-    }
+
     
     // ========================================== member
     // create
@@ -122,8 +131,30 @@ final class FirestoreManager {
     }
     
     // update
-    public func updateMember() {
-        
+    public func updateMemberNickname(with memberID: String, to memberNickname: String) {
+        db.collection(K.DB.collectionName).document(memberID)
+            .updateData([K.DB.MemberField.Nickname: memberNickname]) { error in
+                if let error = error {
+                    print(error.localizedDescription)
+                } else {
+                    print("\(memberID)'s nickname changed")
+                    self.savedMemberInfo?.memberNickname = memberNickname
+                    self.memberInfoDelegate?.changeMemberInfoSuccessed()
+                }
+            }
+    }
+    
+    public func updateMemberPW(with memberID: String, to memberPW: String) {
+        db.collection(K.DB.collectionName).document(memberID)
+            .updateData([K.DB.MemberField.Pw: memberPW]) { error in
+                if let error = error {
+                    print(error.localizedDescription)
+                } else {
+                    print("\(memberID)'s PW changed")
+                    self.savedMemberInfo?.memberPW = memberPW
+                    self.memberInfoDelegate?.changeMemberInfoSuccessed()
+                }
+            }
     }
     
     // delete

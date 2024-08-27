@@ -9,8 +9,8 @@ import Foundation
 
 struct Member {
     let memberID: String
-    let memberPW: String
+    var memberPW: String
     let memberName: String
-    let memberNickname: String
+    var memberNickname: String
     let memberEmail: String
 }
