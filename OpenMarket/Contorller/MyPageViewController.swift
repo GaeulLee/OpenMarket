@@ -201,7 +201,19 @@ class MyPageViewController: UIViewController {
         }))
         
         // 탈퇴
-        sheet.addAction(UIAlertAction(title: "회원탈퇴", style: .default))
+        sheet.addAction(UIAlertAction(title: "회원탈퇴", style: .default, handler: { action in
+            let confirmAlert = UIAlertController(title: "회원탈퇴", message: "정말 회원을 탈퇴하시겠습니까? 작성한 글은 모두 자동으로 삭제됩니다.", preferredStyle: .alert)
+
+            confirmAlert.addAction(UIAlertAction(title: "확인", style: .default, handler: { deleteAction in
+                let id = self.fStoreManager.getMemberInfo().memberID
+                self.fStoreManager.deleteMember(with: id)
+                // 글 삭제
+                self.fStoreManager.setMemberInfo(nil)
+                self.dismiss(animated: true)
+            }))
+            confirmAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+            self.present(confirmAlert, animated: true)
+        }))
         
         // 로그아웃
         sheet.addAction(UIAlertAction(title: "로그아웃", style: .destructive, handler: { action in

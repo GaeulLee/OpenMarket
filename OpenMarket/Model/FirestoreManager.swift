@@ -61,16 +61,21 @@ final class FirestoreManager {
                 return
             } else {
                 if let snapshotDoc = qs?.documents {
-                    let data = snapshotDoc[0].data()
-                    if let id = data[K.DB.MemberField.Id] as? String,
-                       let pw = data[K.DB.MemberField.Pw] as? String,
-                       let name = data[K.DB.MemberField.Name] as? String,
-                       let nickname = data[K.DB.MemberField.Nickname] as? String,
-                       let email = data[K.DB.MemberField.Email] as? String {
-                        let loggedInMember = Member(memberID: id, memberPW: pw, memberName: name, memberNickname: nickname, memberEmail: email)
-                        self.loginDelegate?.loginSuccessed(loggedInMember)
+                    if !snapshotDoc.isEmpty {
+                        let data = snapshotDoc[0].data()
+                        if let id = data[K.DB.MemberField.Id] as? String,
+                           let pw = data[K.DB.MemberField.Pw] as? String,
+                           let name = data[K.DB.MemberField.Name] as? String,
+                           let nickname = data[K.DB.MemberField.Nickname] as? String,
+                           let email = data[K.DB.MemberField.Email] as? String {
+                            let loggedInMember = Member(memberID: id, memberPW: pw, memberName: name, memberNickname: nickname, memberEmail: email)
+                            self.loginDelegate?.loginSuccessed(loggedInMember)
+                            print("로그인 성공")
+                        }
+                    } else {
+                        self.loginDelegate?.loginFailed()
+                        print("로그인 실패")
                     }
-                    print("로그인 성공")
                 } else {
                     self.loginDelegate?.loginFailed()
                     print("로그인 실패")
@@ -143,7 +148,6 @@ final class FirestoreManager {
                 }
             }
     }
-    
     public func updateMemberPW(with memberID: String, to memberPW: String) {
         db.collection(K.DB.collectionName).document(memberID)
             .updateData([K.DB.MemberField.Pw: memberPW]) { error in
@@ -158,8 +162,15 @@ final class FirestoreManager {
     }
     
     // delete
-    public func deleteMember() {
+    public func deleteMember(with memberID: String) {
         
+        do {
+            let db = try db.collection(K.DB.collectionName).document(memberID).delete()
+            print("\(memberID) deleted")
+        } catch {
+            print("\(memberID) delete failed")
+        }
+
     }
     
     // ========================================== item
@@ -182,6 +193,9 @@ final class FirestoreManager {
     }
     
     // read
+    public func readItems() -> [Item]? {
+        return nil
+    }
     
     // update
     

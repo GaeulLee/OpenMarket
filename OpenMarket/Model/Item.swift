@@ -8,7 +8,6 @@
 import Foundation
 
 struct Item {
-//    let itemNo: Int
     let itemName: String
     let itemPrice: String
     let description: String
