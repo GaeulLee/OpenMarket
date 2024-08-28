@@ -182,8 +182,25 @@ class CreateItemViewController: UIViewController {
     
     // MARK: - objc
     @objc private func createItemBtnTapped() {
-        print("createItemBtnTapped")
-        var item = Item(itemName: "item", itemPrice: "100,000", description: "test /n test", date: "2024-08-19", memberID: "abc", itemImage: ["test"])
+        // 유효성 체크 ⭐️
+        if iNameTextfield.text == "" || priceTextfield.text == "" || descriptionTextView.text == "" {
+            print("textfield 입력 안 됨")
+            return
+        }
+        
+        if images.count <= 0 {
+            print("이미지 입력 안 됨")
+            return
+        }
+        
+        
+        let id = fStoreManager.getMemberInfo().memberID
+        var item = Item(itemName: iNameTextfield.text!,
+                        itemPrice: priceTextfield.text!,
+                        description: descriptionTextView.text!,
+                        date: ECT.formatDateToString(date: Date()),
+                        memberID: id,
+                        itemImage: ECT.convertUIImageToData(images: images))
         fStoreManager.createItem(newItem: item) // success
     }
 

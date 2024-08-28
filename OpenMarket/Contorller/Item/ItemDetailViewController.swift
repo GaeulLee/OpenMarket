@@ -27,11 +27,11 @@ class ItemDetailViewController: UIViewController {
             priceLabel.text = item?.itemPrice
             memberIDLabel.text = item?.memberID
             descLabel.text = item?.description
-            self.images = item?.itemImage
+            self.images = ECT.convertDataToUIImage(datas: item!.itemImage)
         }
     }
     
-    var images: [String]?
+    var images: [UIImage]?
     
     lazy var editButton: UIBarButtonItem = {
         let button = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonTapped))
@@ -149,7 +149,7 @@ class ItemDetailViewController: UIViewController {
         self.view.backgroundColor = .backColor
     }
     
-    func setImageSlider(_ images: [String]?) { // scrolliVew에 imageView 추가하는 함수
+    func setImageSlider(_ images: [UIImage]?) { // scrolliVew에 imageView 추가하는 함수
         guard let imgs = images else {
             print("기본 이미지로")
             return
@@ -161,7 +161,7 @@ class ItemDetailViewController: UIViewController {
         
         for index in 0..<imgs.count {
             let imageView = UIImageView()
-            imageView.image = UIImage(named: imgs[index])
+            imageView.image = imgs[index]
             imageView.contentMode = .scaleAspectFit
 
             let xPosition = (self.view.frame.width - 20) * CGFloat(index)

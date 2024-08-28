@@ -130,6 +130,7 @@ class SignUpViewController: UIViewController {
     // MARK: - objc
     @objc private func joinBtnTapped() {
         print("joinBtnTapped")
+        // 유효성 체크 ⭐️
         
         if idTextfield.text != "", pwTextfield.text != "", pwCheckTextfield.text != "",
            nameTextfield.text != "", nickNameTextfield.text != "", emailTextfield.text != "" {

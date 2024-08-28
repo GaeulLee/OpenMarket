@@ -13,5 +13,5 @@ struct Item {
     let description: String
     let date: String
     let memberID: String
-    let itemImage: [String]
+    let itemImage: [Data]
 }

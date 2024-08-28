@@ -21,6 +21,10 @@ protocol FirestoreManagerMemberInfoDelegate {
     func changeMemberInfoSuccessed()
 }
 
+protocol FirestoreManagerItemDelegate {
+    func readItemSuccessed(_ items: [Item])
+}
+
 protocol FirestoreManagerErrorDelegate {
     // 중복 데이터
     // 일반 에러
@@ -34,6 +38,9 @@ final class FirestoreManager {
     var loginDelegate: FirestoreManagerLoginDelegate?
     var memberDelegate: FirestoreManagerMemberDelegate?
     var memberInfoDelegate: FirestoreManagerMemberInfoDelegate?
+    
+    var itemDelegate: FirestoreManagerItemDelegate?
+    
     var errorDelegate: FirestoreManagerErrorDelegate?
     
     private var savedMemberInfo: Member?
@@ -111,7 +118,6 @@ final class FirestoreManager {
         return result
     }
 
-    
     public func createMember(_ newMember: Member) {
         db.collection(K.DB.collectionName).document(newMember.memberID)
             .setData([ K.DB.MemberField.Id: newMember.memberID,
@@ -193,8 +199,34 @@ final class FirestoreManager {
     }
     
     // read
-    public func readItems() -> [Item]? {
-        return nil
+    public func readAllItems() {
+        db.collectionGroup(K.DB.subCollectionName).getDocuments { qs, error in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            } else {
+                if !qs!.documents.isEmpty {
+                    let datas = qs!.documents
+                    var items: [Item] = []
+                    for data in datas {
+                        if let name = data[K.DB.ItemField.Name] as? String,
+                           let price = data[K.DB.ItemField.Price] as? String,
+                           let desc = data[K.DB.ItemField.Desc] as? String,
+                           let date = data[K.DB.ItemField.Date] as? String,
+                           let ID = data[K.DB.ItemField.MemberID] as? String,
+                           let images = data[K.DB.ItemField.Image] as? [Data] {
+                            let item = Item(itemName: name, itemPrice: price, description: desc, date: date, memberID: ID, itemImage: images)
+                            items.append(item)
+                        }
+                    }
+                    self.itemDelegate?.readItemSuccessed(items)
+                    print(items)
+                } else {
+                    print("read items faild")
+                }
+            }
+        }
+        
     }
     
     // update

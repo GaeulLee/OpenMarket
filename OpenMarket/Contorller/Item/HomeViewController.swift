@@ -21,6 +21,11 @@ struct HomeViewController_Preview: PreviewProvider {
 
 class HomeViewController: UIViewController {
 
+    // MARK: - property
+    var fStoreManager = FirestoreManager.shared
+    var items: [Item] = []
+
+    
     // MARK: - UI elements
     lazy var plusButton: UIBarButtonItem = {
         let button = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped))
@@ -52,11 +57,6 @@ class HomeViewController: UIViewController {
         cv.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         return cv
     }()
-    
-    
-    // MARK: - property
-    // db 연결 전 임시 데이터
-    var items: [Item] = [ Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller2", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["sample1", "sample2", "sample3"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller2", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["sample1", "sample2", "sample3"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다. \n 좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller2", itemImage: ["AppIconImage", "AppIconImage"]), Item(itemName: "first", itemPrice: "100,000원", description: "좋은 물건 아주 싸게 팔아봅니다.", date: "2024-07-24", memberID: "seller1", itemImage: ["sample1", "sample2", "sample3"])]
     
     
     // MARK: - objc
@@ -95,13 +95,22 @@ class HomeViewController: UIViewController {
         setConstraints()
         
         collectionView.isHidden = true
+            
+        setData()
+        
     }
     
 
     // MARK: - private
+    private func setData() {
+        fStoreManager.readAllItems()
+    }
+    
     private func setUI() {
         self.title = "Home"
         self.view.backgroundColor = .backColor
+        
+        fStoreManager.itemDelegate = self
     }
     
     private func setTableView() {
@@ -199,3 +208,16 @@ extension HomeViewController: UICollectionViewDataSource {
         return cell
     }
 }
+
+// MARK: - FirestoreManagerItemDelegate
+extension HomeViewController: FirestoreManagerItemDelegate {
+    func readItemSuccessed(_ items: [Item]) {
+        self.items = items
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    
+}
+

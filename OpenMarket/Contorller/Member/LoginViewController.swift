@@ -161,8 +161,6 @@ class LoginViewController: UIViewController {
     }
     
     @objc func loginBtnTapped() {
-        print("loginBtn clicked")
-        
         if idTextfield.text != "", pwTextfield.text != "" {
             fStoreMananger.login(id: idTextfield.text!, pw: pwTextfield.text!)
         }
