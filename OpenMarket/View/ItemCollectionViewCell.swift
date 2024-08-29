@@ -10,17 +10,11 @@ import UIKit
 
 class ItemCollectionViewCell: UICollectionViewCell {
     // MARK: - UI elements
-    let testView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .btnColor
-        return view
+    let iImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
     }()
-    
-//    let pImageView: UIImageView = {
-//        let imageView = UIImageView()
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
-//        return imageView
-//    }()
     
     private let iNameLabel: UILabel = {
         let label = UILabel()
@@ -55,6 +49,7 @@ class ItemCollectionViewCell: UICollectionViewCell {
         // cell 세팅(데이터,화면 등)
         iNameLabel.text = item.itemName
         priceLabel.text = item.itemPrice
+        iImageView.image = UIImage(data: item.itemImage[0])
         
         setupLayout()
     }
@@ -67,7 +62,7 @@ private extension ItemCollectionViewCell {
         labelUIView.addSubview(priceLabel)
         
         self.addSubview(stackView)
-        stackView.addArrangedSubview(testView)
+        stackView.addArrangedSubview(iImageView)
         stackView.addArrangedSubview(labelUIView)
         
         
@@ -79,7 +74,7 @@ private extension ItemCollectionViewCell {
             make.bottom.equalTo(labelUIView.snp.bottom).inset(3)
         }
         
-        testView.snp.makeConstraints { make in
+        iImageView.snp.makeConstraints { make in
             make.height.equalTo((UIScreen.main.bounds.width / 2) - 40)
         }
         

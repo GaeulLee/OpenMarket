@@ -30,16 +30,17 @@ class ItemDetailViewController: UIViewController {
             self.images = ECT.convertDataToUIImage(datas: item!.itemImage)
         }
     }
-    
     var images: [UIImage]?
     
-    lazy var editButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonTapped))
-        return button
-    }()
+    var fStoreManager = FirestoreManager.shared
     
     
     // MARK: - UI element
+    lazy var editButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: self, action: #selector(editButtonTapped))
+        return button
+    }()
+    
     private let scrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.showsVerticalScrollIndicator = false
@@ -122,7 +123,9 @@ class ItemDetailViewController: UIViewController {
             self.present(vc, animated: true)
         }))
         actionSheet.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { UIAlertAction in
-            // 삭제 로직
+            self.fStoreManager.deleteItem(with: self.item!)
+            // self.dismiss(animated: true) 이게 아니라 이전 화면으로 돌아가야 함,,!!!
+            
         }))
         actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
         
@@ -162,7 +165,7 @@ class ItemDetailViewController: UIViewController {
         for index in 0..<imgs.count {
             let imageView = UIImageView()
             imageView.image = imgs[index]
-            imageView.contentMode = .scaleAspectFit
+            imageView.contentMode = .scaleAspectFill
 
             let xPosition = (self.view.frame.width - 20) * CGFloat(index)
             print(xPosition)
@@ -245,7 +248,7 @@ class ItemDetailViewController: UIViewController {
     }
     
     private func setUIBarButtonItem() {
-        if item?.memberID == "seller1" {
+        if item?.memberID == fStoreManager.getMemberInfo().memberID {
             // db연결하고 글 작성자인 경우만(글 작성자와 현재 글을 보고있는 사용자가 일치하는지 확인) 수정 버튼 활성화
             self.navigationItem.rightBarButtonItem = self.editButton
         }

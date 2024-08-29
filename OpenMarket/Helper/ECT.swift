@@ -12,7 +12,7 @@ struct ECT {
     
     static func formatDateToString(date: Date) -> String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         let result = dateFormatter.string(from: date)
         
         return result

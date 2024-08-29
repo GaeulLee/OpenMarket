@@ -23,7 +23,6 @@ class MyPageViewController: UIViewController {
     // MARK: - property
     // db 연결 전 임시 데이터
     var items: [Item] = []
-    
     var fStoreManager = FirestoreManager.shared
     
     // MARK: - UI element
@@ -122,23 +121,6 @@ class MyPageViewController: UIViewController {
     
     
     // MARK: - objc
-    @objc private func changeNicknameBtnTapped() {
-        print("changeNicknameBtnTapped")
-    }
-    
-    @objc private func changePWTapped() {
-        print("changePWTapped")
-    }
-    
-    @objc private func logOutBtnTapped() {
-        print("logOutBtnTapped")
-        
-    }
-    
-    @objc private func signoutBtnTapped() {
-        print("signoutBtnTapped")
-    }
-    
     @objc private func optionButtonTapped() {
         let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
@@ -237,14 +219,19 @@ class MyPageViewController: UIViewController {
         setAddSubview()
         setConstraints()
         
-        roadData()
+        setData()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        setData()
+    }
     
     // MARK: - private
     
-    func roadData() {
+    func setData() {
         let member = fStoreManager.getMemberInfo()
+        
+        fStoreManager.readOneMembersItems(with: member.memberID)
         
         nameLabel2.text = member.memberName
         nicknameLabel2.text = member.memberNickname
@@ -256,6 +243,7 @@ class MyPageViewController: UIViewController {
         self.view.backgroundColor = .backColor
         
         fStoreManager.memberInfoDelegate = self
+        fStoreManager.itemDelegate = self
     }
     
     private func setNavigationBar() {
@@ -362,8 +350,26 @@ extension MyPageViewController: UITableViewDelegate {
 extension MyPageViewController: FirestoreManagerMemberInfoDelegate {
     
     func changeMemberInfoSuccessed() {
-        roadData()
+        setData()
     }
     
 }
+
+// MARK: - FirestoreManagerItemDelegate
+extension MyPageViewController: FirestoreManagerItemDelegate {
+    
+    func readAllItemSuccessed(_ items: [Item]) {
+        print("")
+    }
+    
+    func readOneMembersItemSuccessed(_ items: [Item]) {
+        self.items = items
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    
+}
+
 

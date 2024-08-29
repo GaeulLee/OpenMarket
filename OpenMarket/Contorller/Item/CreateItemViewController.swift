@@ -182,6 +182,9 @@ class CreateItemViewController: UIViewController {
     
     // MARK: - objc
     @objc private func createItemBtnTapped() {
+        
+        print("createItemBtnTapped || images.count => \(images.count)")
+        
         // 유효성 체크 ⭐️
         if iNameTextfield.text == "" || priceTextfield.text == "" || descriptionTextView.text == "" {
             print("textfield 입력 안 됨")
@@ -202,6 +205,8 @@ class CreateItemViewController: UIViewController {
                         memberID: id,
                         itemImage: ECT.convertUIImageToData(images: images))
         fStoreManager.createItem(newItem: item) // success
+        
+        print("post => \(item)")
     }
 
     @objc private func closeBtnTapped() {
@@ -299,6 +304,8 @@ class CreateItemViewController: UIViewController {
         descriptionTextView.delegate = self
         collectionView.dataSource = self
         imageShooter.delegate = self
+        
+        fStoreManager.itemCreateDelegate = self
     }
     
     private func setAddSubview() {
@@ -387,6 +394,8 @@ extension CreateItemViewController: UITextFieldDelegate {
     
 }
 
+
+// MARK: - UITextViewDelegate
 extension CreateItemViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -404,6 +413,8 @@ extension CreateItemViewController: UITextViewDelegate {
     }
 }
 
+
+// MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
 extension CreateItemViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -422,6 +433,7 @@ extension CreateItemViewController: UIImagePickerControllerDelegate, UINavigatio
 }
 
 
+// MARK: - UICollectionViewDataSource
 extension CreateItemViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -443,6 +455,16 @@ extension CreateItemViewController: UICollectionViewDataSource {
             }
         }
         return cell
+    }
+    
+}
+
+
+// MARK: - FirestoreManagerCreateItemDelegate
+extension CreateItemViewController: FirestoreManagerCreateItemDelegate {
+    
+    func createItemSuccessed() {
+        self.dismiss(animated: true)
     }
     
 }

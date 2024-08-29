@@ -14,7 +14,9 @@ class ItemTableViewCell: UITableViewCell {
     public var item: Item? {
         didSet {
             INameLabel.text = item?.itemName
-            priceLabel.text = item?.itemPrice        }
+            priceLabel.text = item?.itemPrice
+            iImageView.image = UIImage(data: item!.itemImage[0])
+        }
     }
 
     
@@ -25,17 +27,11 @@ class ItemTableViewCell: UITableViewCell {
         return view
     }()
     
-    private let testView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .btnColor
-        return view
+    let iImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
     }()
-    
-//    let pImageView: UIImageView = {
-//        let imageView = UIImageView()
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
-//        return imageView
-//    }()
     
     private let INameLabel: UILabel = {
         let label = UILabel()
@@ -83,8 +79,7 @@ class ItemTableViewCell: UITableViewCell {
         labelUIView.addSubview(INameLabel)
         labelUIView.addSubview(priceLabel)
         
-        stackView.addArrangedSubview(testView)
-//        stackView.addArrangedSubview(pImageView)
+        stackView.addArrangedSubview(iImageView)
         stackView.addArrangedSubview(labelUIView)
         
         uiView.addSubview(stackView)
@@ -100,7 +95,7 @@ class ItemTableViewCell: UITableViewCell {
             $0.bottom.equalTo(labelUIView.snp.bottom).inset(3)
         }
         
-        testView.snp.makeConstraints {
+        iImageView.snp.makeConstraints {
             $0.height.width.equalTo(90)
         }
         

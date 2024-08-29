@@ -22,7 +22,12 @@ protocol FirestoreManagerMemberInfoDelegate {
 }
 
 protocol FirestoreManagerItemDelegate {
-    func readItemSuccessed(_ items: [Item])
+    func readAllItemSuccessed(_ items: [Item])
+    func readOneMembersItemSuccessed(_ items: [Item])
+}
+
+protocol FirestoreManagerCreateItemDelegate {
+    func createItemSuccessed()
 }
 
 protocol FirestoreManagerErrorDelegate {
@@ -40,6 +45,7 @@ final class FirestoreManager {
     var memberInfoDelegate: FirestoreManagerMemberInfoDelegate?
     
     var itemDelegate: FirestoreManagerItemDelegate?
+    var itemCreateDelegate: FirestoreManagerCreateItemDelegate?
     
     var errorDelegate: FirestoreManagerErrorDelegate?
     
@@ -169,30 +175,30 @@ final class FirestoreManager {
     
     // delete
     public func deleteMember(with memberID: String) {
-        
         do {
             let db = try db.collection(K.DB.collectionName).document(memberID).delete()
             print("\(memberID) deleted")
         } catch {
             print("\(memberID) delete failed")
         }
-
     }
     
     // ========================================== item
     // create
     public func createItem(newItem: Item) {
+        let itemDocName = "\(newItem.itemName)\(newItem.date)"
+        print(itemDocName)
         db.collection(K.DB.collectionName).document(newItem.memberID)
-            .collection(K.DB.subCollectionName).addDocument(data: [ K.DB.ItemField.Name: newItem.itemName,
-                                                                    K.DB.ItemField.Price: newItem.itemPrice,
-                                                                    K.DB.ItemField.Desc: newItem.description,
-                                                                    K.DB.ItemField.Date: newItem.date,
-                                                                    K.DB.ItemField.MemberID: newItem.memberID,
-                                                                    K.DB.ItemField.Image: newItem.itemImage ]) { error in
+            .collection(K.DB.subCollectionName).document(itemDocName).setData([K.DB.ItemField.Name: newItem.itemName,
+                                                                               K.DB.ItemField.Price: newItem.itemPrice,
+                                                                               K.DB.ItemField.Desc: newItem.description,
+                                                                               K.DB.ItemField.Date: newItem.date,
+                                                                               K.DB.ItemField.MemberID: newItem.memberID,
+                                                                               K.DB.ItemField.Image: newItem.itemImage]) { error in
             if let error = error {
-                // fail
+                print(error.localizedDescription)
             } else {
-                // success
+                self.itemCreateDelegate?.createItemSuccessed()
                 print("\(newItem.itemName) added")
             }
         }
@@ -219,8 +225,38 @@ final class FirestoreManager {
                             items.append(item)
                         }
                     }
-                    self.itemDelegate?.readItemSuccessed(items)
-                    print(items)
+                    self.itemDelegate?.readAllItemSuccessed(items)
+                } else {
+                    print("read items faild")
+                }
+            }
+        }
+        
+    }
+    
+    public func readOneMembersItems(with memberID: String) {
+        db.collectionGroup(K.DB.subCollectionName)
+            .order(by: K.DB.ItemField.Date, descending: false)
+            .whereField(K.DB.ItemField.MemberID, isEqualTo: memberID).getDocuments { qs, error in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            } else {
+                if !qs!.documents.isEmpty {
+                    let datas = qs!.documents
+                    var items: [Item] = []
+                    for data in datas {
+                        if let name = data[K.DB.ItemField.Name] as? String,
+                           let price = data[K.DB.ItemField.Price] as? String,
+                           let desc = data[K.DB.ItemField.Desc] as? String,
+                           let date = data[K.DB.ItemField.Date] as? String,
+                           let ID = data[K.DB.ItemField.MemberID] as? String,
+                           let images = data[K.DB.ItemField.Image] as? [Data] {
+                            let item = Item(itemName: name, itemPrice: price, description: desc, date: date, memberID: ID, itemImage: images)
+                            items.append(item)
+                        }
+                    }
+                    self.itemDelegate?.readOneMembersItemSuccessed(items)
                 } else {
                     print("read items faild")
                 }
@@ -232,6 +268,17 @@ final class FirestoreManager {
     // update
     
     // delete
+    public func deleteItem(with item: Item) {
+        do {
+            let itemDocName = "\(item.itemName)\(item.date)"
+            let db = try db.collection(K.DB.collectionName).document(item.memberID)
+                .collection(K.DB.subCollectionName).document(itemDocName).delete()
+            print("\(item.itemName) deleted")
+        } catch {
+            print("\(item.itemName) delete failed")
+        }
+    }
+    
     
     // ========================================== image
     // create

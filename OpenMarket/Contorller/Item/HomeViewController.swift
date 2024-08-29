@@ -100,6 +100,10 @@ class HomeViewController: UIViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        setData()
+    }
+    
 
     // MARK: - private
     private func setData() {
@@ -211,13 +215,18 @@ extension HomeViewController: UICollectionViewDataSource {
 
 // MARK: - FirestoreManagerItemDelegate
 extension HomeViewController: FirestoreManagerItemDelegate {
-    func readItemSuccessed(_ items: [Item]) {
+    
+    func readOneMembersItemSuccessed(_ items: [Item]) {
+        print("")
+    }
+    
+    func readAllItemSuccessed(_ items: [Item]) {
         self.items = items
         DispatchQueue.main.async {
             self.tableView.reloadData()
+            self.collectionView.reloadData()
         }
     }
-    
     
 }
 
