@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-struct ECT {
+struct ETC {
     
     static func formatDateToString(date: Date) -> String {
         let dateFormatter = DateFormatter()

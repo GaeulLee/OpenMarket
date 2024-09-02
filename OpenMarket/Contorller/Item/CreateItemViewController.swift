@@ -25,9 +25,9 @@ struct CreateItemViewController_Preview: PreviewProvider {
 class CreateItemViewController: UIViewController {
 
     // MARK: - Property
-    var test: String? {
+    var item: Item? {
         didSet {
-            vcTitleLabel.text = test
+            //vcTitleLabel.text = test
         }
     }
     
@@ -182,31 +182,40 @@ class CreateItemViewController: UIViewController {
     
     // MARK: - objc
     @objc private func createItemBtnTapped() {
-        
         print("createItemBtnTapped || images.count => \(images.count)")
-        
         // 유효성 체크 ⭐️
         if iNameTextfield.text == "" || priceTextfield.text == "" || descriptionTextView.text == "" {
             print("textfield 입력 안 됨")
             return
         }
-        
         if images.count <= 0 {
             print("이미지 입력 안 됨")
             return
         }
         
+        if let item = self.item {
+            var modifiedItem = Item(itemName: iNameTextfield.text!,
+                            itemPrice: priceTextfield.text!,
+                            description: descriptionTextView.text!,
+                            date: item.date,
+                            memberID: item.memberID,
+                            itemImage: ETC.convertUIImageToData(images: images))
+            fStoreManager.updateItem(modifiedItem: modifiedItem, prevItemName: item.itemName)
+            print("modified post => \(modifiedItem)")
+
+        } else {
+            let id = fStoreManager.getMemberInfo().memberID
+            var newItem = Item(itemName: iNameTextfield.text!,
+                            itemPrice: priceTextfield.text!,
+                            description: descriptionTextView.text!,
+                            date: ETC.formatDateToString(date: Date()),
+                            memberID: id,
+                            itemImage: ETC.convertUIImageToData(images: images))
+            fStoreManager.createItem(newItem: newItem)
+            print("new post => \(newItem)")
+        }
         
-        let id = fStoreManager.getMemberInfo().memberID
-        var item = Item(itemName: iNameTextfield.text!,
-                        itemPrice: priceTextfield.text!,
-                        description: descriptionTextView.text!,
-                        date: ECT.formatDateToString(date: Date()),
-                        memberID: id,
-                        itemImage: ECT.convertUIImageToData(images: images))
-        fStoreManager.createItem(newItem: item) // success
         
-        print("post => \(item)")
     }
 
     @objc private func closeBtnTapped() {
@@ -291,10 +300,34 @@ class CreateItemViewController: UIViewController {
         setUI()
         setAddSubview()
         setConstraints()
+        
+        setData()
     }
     
     
     // MARK: - private
+    private func setData() {
+        if let item = self.item {
+            vcTitleLabel.text = "게시물 수정"
+            createItemBtn.setTitle("수정 완료", for: .normal)
+            
+            iNameTextfield.text = item.itemName
+            priceTextfield.text = item.itemPrice
+            descriptionTextView.text = item.description
+            self.images = ETC.convertDataToUIImage(datas: item.itemImage)
+            
+            DispatchQueue.main.async {
+                self.descriptionTextView.textColor = .defaultFontColor
+                
+                self.collectionView.reloadData()
+                self.selectPhotoBtn.setTitle("\(self.images.count)/5", for: .normal)
+            }
+
+        } else {
+            vcTitleLabel.text = "새 게시물 작성"
+        }
+    }
+    
     private func setUI() {
         self.title = ""
         self.view.backgroundColor = .backColor
@@ -305,7 +338,7 @@ class CreateItemViewController: UIViewController {
         collectionView.dataSource = self
         imageShooter.delegate = self
         
-        fStoreManager.itemCreateDelegate = self
+        fStoreManager.uploadItemDelegate = self
     }
     
     private func setAddSubview() {
@@ -461,9 +494,9 @@ extension CreateItemViewController: UICollectionViewDataSource {
 
 
 // MARK: - FirestoreManagerCreateItemDelegate
-extension CreateItemViewController: FirestoreManagerCreateItemDelegate {
+extension CreateItemViewController: FirestoreManagerUploadItemDelegate {
     
-    func createItemSuccessed() {
+    func uploadItemSuccessed() {
         self.dismiss(animated: true)
     }
     

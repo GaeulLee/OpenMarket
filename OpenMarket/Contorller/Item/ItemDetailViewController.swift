@@ -27,7 +27,7 @@ class ItemDetailViewController: UIViewController {
             priceLabel.text = item?.itemPrice
             memberIDLabel.text = item?.memberID
             descLabel.text = item?.description
-            self.images = ECT.convertDataToUIImage(datas: item!.itemImage)
+            self.images = ETC.convertDataToUIImage(datas: item!.itemImage)
         }
     }
     var images: [UIImage]?
@@ -118,7 +118,7 @@ class ItemDetailViewController: UIViewController {
         actionSheet.addAction(UIAlertAction(title: "수정", style: .default, handler: { UIAlertAction in
             let vc = CreateItemViewController()
             vc.modalPresentationStyle = .fullScreen
-            vc.test = "게시물 수정"
+            vc.item = self.item
             // 작성된 글 정보 전달!!
             self.present(vc, animated: true)
         }))

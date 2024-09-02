@@ -26,8 +26,8 @@ protocol FirestoreManagerItemDelegate {
     func readOneMembersItemSuccessed(_ items: [Item])
 }
 
-protocol FirestoreManagerCreateItemDelegate {
-    func createItemSuccessed()
+protocol FirestoreManagerUploadItemDelegate {
+    func uploadItemSuccessed()
 }
 
 protocol FirestoreManagerErrorDelegate {
@@ -45,7 +45,7 @@ final class FirestoreManager {
     var memberInfoDelegate: FirestoreManagerMemberInfoDelegate?
     
     var itemDelegate: FirestoreManagerItemDelegate?
-    var itemCreateDelegate: FirestoreManagerCreateItemDelegate?
+    var uploadItemDelegate: FirestoreManagerUploadItemDelegate?
     
     var errorDelegate: FirestoreManagerErrorDelegate?
     
@@ -189,16 +189,17 @@ final class FirestoreManager {
         let itemDocName = "\(newItem.itemName)\(newItem.date)"
         print(itemDocName)
         db.collection(K.DB.collectionName).document(newItem.memberID)
-            .collection(K.DB.subCollectionName).document(itemDocName).setData([K.DB.ItemField.Name: newItem.itemName,
-                                                                               K.DB.ItemField.Price: newItem.itemPrice,
-                                                                               K.DB.ItemField.Desc: newItem.description,
-                                                                               K.DB.ItemField.Date: newItem.date,
-                                                                               K.DB.ItemField.MemberID: newItem.memberID,
-                                                                               K.DB.ItemField.Image: newItem.itemImage]) { error in
+            .collection(K.DB.subCollectionName).document(itemDocName)
+            .setData([K.DB.ItemField.Name: newItem.itemName,
+                       K.DB.ItemField.Price: newItem.itemPrice,
+                       K.DB.ItemField.Desc: newItem.description,
+                       K.DB.ItemField.Date: newItem.date,
+                       K.DB.ItemField.MemberID: newItem.memberID,
+                       K.DB.ItemField.Image: newItem.itemImage]) { error in
             if let error = error {
                 print(error.localizedDescription)
             } else {
-                self.itemCreateDelegate?.createItemSuccessed()
+                self.uploadItemDelegate?.uploadItemSuccessed()
                 print("\(newItem.itemName) added")
             }
         }
@@ -266,6 +267,35 @@ final class FirestoreManager {
     }
     
     // update
+    public func updateItem(modifiedItem: Item, prevItemName: String) {
+        let oldItemDocName = "\(prevItemName)\(modifiedItem.date)"
+        let newItemDocName = "\(modifiedItem.itemName)\(modifiedItem.date)"
+        
+        print("oldItemDocName => \(oldItemDocName)")
+        print("newItemDocName => \(newItemDocName)")
+        
+        // 기존 데이터 삭제하고
+        db.collection(K.DB.collectionName).document(modifiedItem.memberID)
+            .collection(K.DB.subCollectionName).document(oldItemDocName).delete()
+        print("\(oldItemDocName) deleted")
+        
+        // 수정된 데이터로 새롭게 생성
+        db.collection(K.DB.collectionName).document(modifiedItem.memberID)
+            .collection(K.DB.subCollectionName).document(newItemDocName)
+            .setData([K.DB.ItemField.Name: modifiedItem.itemName,
+                       K.DB.ItemField.Price: modifiedItem.itemPrice,
+                       K.DB.ItemField.Desc: modifiedItem.description,
+                       K.DB.ItemField.Date: modifiedItem.date,
+                       K.DB.ItemField.MemberID: modifiedItem.memberID,
+                       K.DB.ItemField.Image: modifiedItem.itemImage]) { error in
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                self.uploadItemDelegate?.uploadItemSuccessed()
+                print("\(modifiedItem.itemName) modified")
+            }
+        }
+    }
     
     // delete
     public func deleteItem(with item: Item) {

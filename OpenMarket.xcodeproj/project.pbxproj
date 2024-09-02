@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9B044C712C7363D70074EC2E /* FirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B044C702C7363D70074EC2E /* FirestoreManager.swift */; };
-		9B044C732C7F492F0074EC2E /* ECT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B044C722C7F492F0074EC2E /* ECT.swift */; };
+		9B044C732C7F492F0074EC2E /* ETC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B044C722C7F492F0074EC2E /* ETC.swift */; };
 		9B3CF0DE2C3BFC0F00629B5D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF0DD2C3BFC0F00629B5D /* AppDelegate.swift */; };
 		9B3CF0E02C3BFC0F00629B5D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF0DF2C3BFC0F00629B5D /* SceneDelegate.swift */; };
 		9B3CF0E22C3BFC0F00629B5D /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF0E12C3BFC0F00629B5D /* LoginViewController.swift */; };
@@ -40,7 +40,7 @@
 		223961D2AB60054D9819530F /* Pods_OpenMarket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OpenMarket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		798A3F75075A054D3EA61860 /* Pods-OpenMarket.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OpenMarket.debug.xcconfig"; path = "Target Support Files/Pods-OpenMarket/Pods-OpenMarket.debug.xcconfig"; sourceTree = "<group>"; };
 		9B044C702C7363D70074EC2E /* FirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreManager.swift; sourceTree = "<group>"; };
-		9B044C722C7F492F0074EC2E /* ECT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ECT.swift; sourceTree = "<group>"; };
+		9B044C722C7F492F0074EC2E /* ETC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETC.swift; sourceTree = "<group>"; };
 		9B3CF0DA2C3BFC0F00629B5D /* OpenMarket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenMarket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B3CF0DD2C3BFC0F00629B5D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9B3CF0DF2C3BFC0F00629B5D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -191,7 +191,7 @@
 			children = (
 				9B3CF1092C468E1500629B5D /* UIColor+Extension.swift */,
 				9B3CF10B2C468E3200629B5D /* K.swift */,
-				9B044C722C7F492F0074EC2E /* ECT.swift */,
+				9B044C722C7F492F0074EC2E /* ETC.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -332,7 +332,7 @@
 				9B3CF1122C49354300629B5D /* ItemCollectionViewCell.swift in Sources */,
 				9B3CF0E02C3BFC0F00629B5D /* SceneDelegate.swift in Sources */,
 				9B3CF0F72C3D527000629B5D /* FindIDViewController.swift in Sources */,
-				9B044C732C7F492F0074EC2E /* ECT.swift in Sources */,
+				9B044C732C7F492F0074EC2E /* ETC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
