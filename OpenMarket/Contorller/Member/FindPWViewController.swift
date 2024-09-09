@@ -19,28 +19,40 @@ struct FindPWViewController_Preview: PreviewProvider {
 #endif
 
 class FindPWViewController: UIViewController {
-
+    
+    // MARK: - property
+    var fStoreManager = FirestoreManager.shared
+    
+    
     // MARK: - UI Components
     private let nameTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "Enter Name"
+        tf.attributedPlaceholder = NSAttributedString(string: "Enter Name", attributes: [.foregroundColor: UIColor.lightGray])
+        tf.font = .systemFont(ofSize: 16, weight: .regular)
         tf.borderStyle = .roundedRect
-        tf.backgroundColor = .tfColor
-        tf.textColor = .lightGray
-        tf.tintColor = .lightGray
-        tf.autocapitalizationType = .none // 첫글자 대문자 설정 X
-        tf.autocorrectionType = .no // 자동 수정 설정 X
-        tf.spellCheckingType = .no // 맞춤법 검사 설정 X
+        tf.backgroundColor = .clear
+        tf.textColor = .defaultFontColor
+        tf.tintColor = .defaultFontColor
+        tf.layer.borderWidth = 1
+        tf.layer.cornerRadius = 7
+        tf.layer.borderColor = UIColor.lightGray.cgColor
+        tf.autocapitalizationType = .none
+        tf.autocorrectionType = .no
+        tf.spellCheckingType = .no
         return tf
     }()
     
     private let idTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "Enter ID"
+        tf.attributedPlaceholder = NSAttributedString(string: "Enter ID", attributes: [.foregroundColor: UIColor.lightGray])
+        tf.font = .systemFont(ofSize: 16, weight: .regular)
         tf.borderStyle = .roundedRect
-        tf.backgroundColor = .tfColor
-        tf.textColor = .lightGray
-        tf.tintColor = .lightGray
+        tf.backgroundColor = .clear
+        tf.textColor = .defaultFontColor
+        tf.tintColor = .defaultFontColor
+        tf.layer.borderWidth = 1
+        tf.layer.cornerRadius = 7
+        tf.layer.borderColor = UIColor.lightGray.cgColor
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.spellCheckingType = .no
@@ -49,11 +61,15 @@ class FindPWViewController: UIViewController {
     
     private let emailTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "Enter Email"
+        tf.attributedPlaceholder = NSAttributedString(string: "Enter Email", attributes: [.foregroundColor: UIColor.lightGray])
+        tf.font = .systemFont(ofSize: 16, weight: .regular)
         tf.borderStyle = .roundedRect
-        tf.backgroundColor = .tfColor
-        tf.textColor = .lightGray
-        tf.tintColor = .lightGray
+        tf.backgroundColor = .clear
+        tf.textColor = .defaultFontColor
+        tf.tintColor = .defaultFontColor
+        tf.layer.borderWidth = 1
+        tf.layer.cornerRadius = 7
+        tf.layer.borderColor = UIColor.lightGray.cgColor
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.spellCheckingType = .no
@@ -63,7 +79,7 @@ class FindPWViewController: UIViewController {
     
     private let findBtn: UIButton = {
         let btn = UIButton()
-        btn.setTitle("Find Passward", for: .normal)
+        btn.setTitle("비밀번호 찾기", for: .normal)
         btn.setTitleColor(.systemBackground, for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
         btn.backgroundColor = .btnColor
@@ -86,7 +102,9 @@ class FindPWViewController: UIViewController {
     
     // MARK: - objc
     @objc private func findBtnTapped() {
-        print("findBtnTapped")
+        if nameTextfield.text != "", emailTextfield.text != "", idTextfield.text != "" {
+            fStoreManager.findPW(name: nameTextfield.text!, email: emailTextfield.text!, id: idTextfield.text!)
+        }
     }
     
     
@@ -108,7 +126,9 @@ class FindPWViewController: UIViewController {
     // MARK: - private
     private func setUI() {
         self.view.backgroundColor = .backColor
-        self.title = "PW 찾기"
+        self.title = "비밃번호 찾기"
+        
+        fStoreManager.findMemeberPWDelegate = self
     }
 
     private func setStackView() {
@@ -124,7 +144,7 @@ class FindPWViewController: UIViewController {
         entireStackView.snp.makeConstraints { make in
             make.centerX.equalTo(self.view)
             make.top.equalTo(self.view.safeAreaLayoutGuide).inset(10)
-            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(50)
+            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(10)
         }
         
         nameTextfield.snp.makeConstraints { make in
@@ -141,10 +161,56 @@ class FindPWViewController: UIViewController {
         
         findBtn.snp.makeConstraints { make in
             make.centerX.equalTo(self.view)
-            make.top.equalTo(entireStackView.snp.bottom).inset(-20)
-            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(50)
+            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(10)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(0)
             make.height.equalTo(48)
         }
     }
 
+}
+
+extension FindPWViewController: FirestoreManagerFindMemberPWDelegate {
+    
+    func findPWSuccessed(_ id: String) {
+        let alert = UIAlertController(title: "새 비밀번호 설정", message: "입력하신 정보로 가입된 계정의 비밀번호를 변경합니다. 변경할 새 비밀번호를 입력해주세요.", preferredStyle: .alert)
+        
+        alert.addTextField { tf1 in
+            tf1.placeholder = "변경할 비밀번호 입력"
+            tf1.isSecureTextEntry = true
+        }
+        
+        alert.addTextField { tf2 in
+            tf2.placeholder = "비밀번호 확인"
+            tf2.isSecureTextEntry = true
+        }
+        
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { ok in
+            if let tf1 = alert.textFields?[0].text, let tf2 = alert.textFields?[1].text {
+                if tf1 != "", tf2 != "" {
+                    if tf1 == tf2 {
+                        self.fStoreManager.updateMemberPW(with: id, to: tf1)
+                        
+                        let successAlert = UIAlertController(title: "변경 완료", message: "비밀번호가 성공적으로 변경되었습니다.", preferredStyle: .alert)
+                        successAlert.addAction(UIAlertAction(title: "확인", style: .default))
+                        self.present(successAlert, animated: true)
+                    } else {
+                        let errorAlert = UIAlertController(title: "입력 확인", message: "입력한 두 비밀번호가 일치하지 않습니다.", preferredStyle: .alert)
+                        errorAlert.addAction(UIAlertAction(title: "확인", style: .default))
+                        self.present(errorAlert, animated: true)
+                    }
+                }
+                
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        self.present(alert, animated: true)
+    }
+    
+    func findPWFailed() {
+        let alert = UIAlertController(title: "비밇번호 찾기 결과", message: "입력하신 정보로 가입된 계정 정보가 존재하지 않습니다.", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        self.present(alert, animated: true)
+    }
+    
 }

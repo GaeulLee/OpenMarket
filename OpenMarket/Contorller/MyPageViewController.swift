@@ -356,7 +356,7 @@ extension MyPageViewController: FirestoreManagerMemberInfoDelegate {
 }
 
 // MARK: - FirestoreManagerItemDelegate
-extension MyPageViewController: FirestoreManagerItemDelegate {
+extension MyPageViewController: FirestoreManagerItemReadDelegate {
     
     func readAllItemSuccessed(_ items: [Item]) {
         print("")

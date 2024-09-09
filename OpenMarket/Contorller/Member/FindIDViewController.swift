@@ -20,27 +20,39 @@ struct FindIDViewController_Preview: PreviewProvider {
 
 class FindIDViewController: UIViewController {
 
+    // MARK: - property
+    var fStoreManager = FirestoreManager.shared
+
+    
     // MARK: - UI Components
     private let nameTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "Enter Name"
+        tf.attributedPlaceholder = NSAttributedString(string: "Enter Name", attributes: [.foregroundColor: UIColor.lightGray])
+        tf.font = .systemFont(ofSize: 16, weight: .regular)
         tf.borderStyle = .roundedRect
-        tf.backgroundColor = .tfColor
-        tf.textColor = .lightGray
-        tf.tintColor = .lightGray
-        tf.autocapitalizationType = .none // 첫글자 대문자 설정 X
-        tf.autocorrectionType = .no // 자동 수정 설정 X
-        tf.spellCheckingType = .no // 맞춤법 검사 설정 X
+        tf.backgroundColor = .clear
+        tf.textColor = .defaultFontColor
+        tf.tintColor = .defaultFontColor
+        tf.layer.borderWidth = 1
+        tf.layer.cornerRadius = 7
+        tf.layer.borderColor = UIColor.lightGray.cgColor
+        tf.autocapitalizationType = .none
+        tf.autocorrectionType = .no
+        tf.spellCheckingType = .no
         return tf
     }()
     
     private let emailTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "Enter Email"
+        tf.attributedPlaceholder = NSAttributedString(string: "Enter Email", attributes: [.foregroundColor: UIColor.lightGray])
+        tf.font = .systemFont(ofSize: 16, weight: .regular)
         tf.borderStyle = .roundedRect
-        tf.backgroundColor = .tfColor
-        tf.textColor = .lightGray
-        tf.tintColor = .lightGray
+        tf.backgroundColor = .clear
+        tf.textColor = .defaultFontColor
+        tf.tintColor = .defaultFontColor
+        tf.layer.borderWidth = 1
+        tf.layer.cornerRadius = 7
+        tf.layer.borderColor = UIColor.lightGray.cgColor
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.spellCheckingType = .no
@@ -50,7 +62,7 @@ class FindIDViewController: UIViewController {
     
     private let findBtn: UIButton = {
         let btn = UIButton()
-        btn.setTitle("Find ID", for: .normal)
+        btn.setTitle("아이디 찾기", for: .normal)
         btn.setTitleColor(.systemBackground, for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
         btn.backgroundColor = .btnColor
@@ -73,7 +85,9 @@ class FindIDViewController: UIViewController {
     
     // MARK: - objc
     @objc private func findBtnTapped() {
-        print("findBtnTapped")
+        if nameTextfield.text != "", emailTextfield.text != "" {
+            fStoreManager.findID(name: nameTextfield.text!, email: emailTextfield.text!)
+        }
     }
     
     
@@ -95,6 +109,8 @@ class FindIDViewController: UIViewController {
     private func setUI() {
         self.view.backgroundColor = .backColor
         self.title = "ID 찾기"
+        
+        fStoreManager.findMemeberIDDelegate = self
     }
 
     private func setStackView() {
@@ -109,7 +125,7 @@ class FindIDViewController: UIViewController {
         entireStackView.snp.makeConstraints { make in
             make.centerX.equalTo(self.view)
             make.top.equalTo(self.view.safeAreaLayoutGuide).inset(10)
-            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(50)
+            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(10)
         }
         
         nameTextfield.snp.makeConstraints { make in
@@ -122,9 +138,28 @@ class FindIDViewController: UIViewController {
         
         findBtn.snp.makeConstraints { make in
             make.centerX.equalTo(self.view)
-            make.top.equalTo(entireStackView.snp.bottom).inset(-20)
-            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(50)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(0)
+            make.left.right.equalTo(self.view.safeAreaLayoutGuide).inset(10)
             make.height.equalTo(48)
         }
     }
+}
+
+extension FindIDViewController: FirestoreManagerFindMemberIDDelegate {
+    
+    func findIDFailed() {
+        let alert = UIAlertController(title: "아이디 찾기 결과", message: "입력하신 정보로 가입된 아이디가 존재하지 않습니다.", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        self.present(alert, animated: true)
+    }
+    
+    
+    func findIDSuccessed(_ id: String) {
+        let alert = UIAlertController(title: "아이디 찾기 결과", message: "입력하신 정보로 가입된 아이디는 '\(id)' 입니다.", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        self.present(alert, animated: true)
+    }
+    
 }

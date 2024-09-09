@@ -338,7 +338,7 @@ class CreateItemViewController: UIViewController {
         collectionView.dataSource = self
         imageShooter.delegate = self
         
-        fStoreManager.uploadItemDelegate = self
+        fStoreManager.updateItemDelegate = self
     }
     
     private func setAddSubview() {
@@ -494,9 +494,16 @@ extension CreateItemViewController: UICollectionViewDataSource {
 
 
 // MARK: - FirestoreManagerCreateItemDelegate
-extension CreateItemViewController: FirestoreManagerUploadItemDelegate {
+extension CreateItemViewController: FirestoreManagerItemUpdateDelegate {
     
-    func uploadItemSuccessed() {
+    func updateItemSuccessed(_ updatedItem: Item) {
+//        let vc = ItemDetailViewController()
+//        vc.item = updatedItem
+//        
+//        navigationController?.pushViewController(vc, animated: true)
+        
+        // 이전 화면으로 데이터 넘기는 방법 찾아보기
+        
         self.dismiss(animated: true)
     }
     

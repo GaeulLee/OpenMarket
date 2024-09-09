@@ -125,6 +125,7 @@ class ItemDetailViewController: UIViewController {
         actionSheet.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { UIAlertAction in
             self.fStoreManager.deleteItem(with: self.item!)
             // self.dismiss(animated: true) 이게 아니라 이전 화면으로 돌아가야 함,,!!!
+            // 네비게이션 컨트롤러 이전 화면으로 넘어가는 방법 찾아보기
             
         }))
         actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))

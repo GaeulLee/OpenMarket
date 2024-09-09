@@ -17,13 +17,27 @@ protocol FirestoreManagerMemberDelegate {
     func signUpSuccessed()
 }
 
+protocol FirestoreManagerFindMemberIDDelegate {
+    func findIDSuccessed(_ id: String)
+    func findIDFailed()
+}
+
+protocol FirestoreManagerFindMemberPWDelegate {
+    func findPWSuccessed(_ id: String)
+    func findPWFailed()
+}
+
 protocol FirestoreManagerMemberInfoDelegate {
     func changeMemberInfoSuccessed()
 }
 
-protocol FirestoreManagerItemDelegate {
+protocol FirestoreManagerItemReadDelegate {
     func readAllItemSuccessed(_ items: [Item])
     func readOneMembersItemSuccessed(_ items: [Item])
+}
+
+protocol FirestoreManagerItemUpdateDelegate {
+    func updateItemSuccessed(_ updatedItem: Item)
 }
 
 protocol FirestoreManagerUploadItemDelegate {
@@ -44,8 +58,12 @@ final class FirestoreManager {
     var memberDelegate: FirestoreManagerMemberDelegate?
     var memberInfoDelegate: FirestoreManagerMemberInfoDelegate?
     
-    var itemDelegate: FirestoreManagerItemDelegate?
+    var findMemeberIDDelegate: FirestoreManagerFindMemberIDDelegate?
+    var findMemeberPWDelegate: FirestoreManagerFindMemberPWDelegate?
+    
+    var itemDelegate: FirestoreManagerItemReadDelegate?
     var uploadItemDelegate: FirestoreManagerUploadItemDelegate?
+    var updateItemDelegate: FirestoreManagerItemUpdateDelegate?
     
     var errorDelegate: FirestoreManagerErrorDelegate?
     
@@ -71,27 +89,66 @@ final class FirestoreManager {
             if let error = error {
                 // fail
                 print(error.localizedDescription)
-                return
             } else {
-                if let snapshotDoc = qs?.documents {
-                    if !snapshotDoc.isEmpty {
-                        let data = snapshotDoc[0].data()
-                        if let id = data[K.DB.MemberField.Id] as? String,
-                           let pw = data[K.DB.MemberField.Pw] as? String,
-                           let name = data[K.DB.MemberField.Name] as? String,
-                           let nickname = data[K.DB.MemberField.Nickname] as? String,
-                           let email = data[K.DB.MemberField.Email] as? String {
-                            let loggedInMember = Member(memberID: id, memberPW: pw, memberName: name, memberNickname: nickname, memberEmail: email)
-                            self.loginDelegate?.loginSuccessed(loggedInMember)
-                            print("로그인 성공")
-                        }
-                    } else {
-                        self.loginDelegate?.loginFailed()
-                        print("로그인 실패")
+                if !qs!.documents.isEmpty {
+                    let data = qs!.documents[0].data()
+                    if let id = data[K.DB.MemberField.Id] as? String,
+                       let pw = data[K.DB.MemberField.Pw] as? String,
+                       let name = data[K.DB.MemberField.Name] as? String,
+                       let nickname = data[K.DB.MemberField.Nickname] as? String,
+                       let email = data[K.DB.MemberField.Email] as? String {
+                        let loggedInMember = Member(memberID: id, memberPW: pw, memberName: name, memberNickname: nickname, memberEmail: email)
+                        self.loginDelegate?.loginSuccessed(loggedInMember)
+                        print("로그인 성공")
                     }
                 } else {
                     self.loginDelegate?.loginFailed()
                     print("로그인 실패")
+                }
+            }
+        }
+    }
+    
+    public func findID(name: String, email: String) {
+        let query = db.collection(K.DB.collectionName).whereField(K.DB.MemberField.Name, isEqualTo: name).whereField(K.DB.MemberField.Email, isEqualTo: email)
+        
+        query.getDocuments { qs, error in
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                if !qs!.documents.isEmpty {
+                    let data = qs!.documents[0].data()
+                    if let id = data[K.DB.MemberField.Id] as? String {
+                        self.findMemeberIDDelegate?.findIDSuccessed(id)
+                        print("Find ID Successed")
+                    }
+                } else {
+                    self.findMemeberIDDelegate?.findIDFailed()
+                    print("Find ID Failed")
+                }
+            }
+        }
+    }
+    
+    public func findPW(name: String, email: String, id: String) {
+        let query = db.collection(K.DB.collectionName)
+            .whereField(K.DB.MemberField.Name, isEqualTo: name)
+            .whereField(K.DB.MemberField.Email, isEqualTo: email)
+            .whereField(K.DB.MemberField.Id, isEqualTo: id)
+        
+        query.getDocuments { qs, error in
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                if !qs!.documents.isEmpty {
+                    let data = qs!.documents[0].data()
+                    if let id = data[K.DB.MemberField.Id] as? String {
+                        self.findMemeberPWDelegate?.findPWSuccessed(id)
+                        print("Find PW Successed")
+                    }
+                } else {
+                    self.findMemeberPWDelegate?.findPWFailed()
+                    print("Find PW Failed")
                 }
             }
         }
@@ -291,7 +348,7 @@ final class FirestoreManager {
             if let error = error {
                 print(error.localizedDescription)
             } else {
-                self.uploadItemDelegate?.uploadItemSuccessed()
+                self.updateItemDelegate?.updateItemSuccessed(modifiedItem)
                 print("\(modifiedItem.itemName) modified")
             }
         }
@@ -308,14 +365,5 @@ final class FirestoreManager {
             print("\(item.itemName) delete failed")
         }
     }
-    
-    
-    // ========================================== image
-    // create
-    
-    // read
-    
-    // update
-    
-    // delete
+
 }

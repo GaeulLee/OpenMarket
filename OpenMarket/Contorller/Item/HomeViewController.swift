@@ -213,7 +213,7 @@ extension HomeViewController: UICollectionViewDataSource {
 }
 
 // MARK: - FirestoreManagerItemDelegate
-extension HomeViewController: FirestoreManagerItemDelegate {
+extension HomeViewController: FirestoreManagerItemReadDelegate {
     
     func readOneMembersItemSuccessed(_ items: [Item]) {
         print("")
