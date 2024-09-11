@@ -13,8 +13,10 @@ protocol FirestoreManagerLoginDelegate {
     func loginFailed()
 }
 
-protocol FirestoreManagerMemberDelegate {
+protocol FirestoreManagerMemberSingUpDelegate {
     func signUpSuccessed()
+    func ableToProceedSignUp(_ fieldName: String)
+    func disableToProceedSignUp(_ fieldName: String)
 }
 
 protocol FirestoreManagerFindMemberIDDelegate {
@@ -26,6 +28,8 @@ protocol FirestoreManagerFindMemberPWDelegate {
     func findPWSuccessed(_ id: String)
     func findPWFailed()
 }
+
+
 
 protocol FirestoreManagerMemberInfoDelegate {
     func changeMemberInfoSuccessed()
@@ -55,9 +59,9 @@ final class FirestoreManager {
     private init() {}
     
     var loginDelegate: FirestoreManagerLoginDelegate?
-    var memberDelegate: FirestoreManagerMemberDelegate?
+    var memberSingUpDelegate: FirestoreManagerMemberSingUpDelegate?
     var memberInfoDelegate: FirestoreManagerMemberInfoDelegate?
-    
+
     var findMemeberIDDelegate: FirestoreManagerFindMemberIDDelegate?
     var findMemeberPWDelegate: FirestoreManagerFindMemberPWDelegate?
     
@@ -157,9 +161,7 @@ final class FirestoreManager {
     
     // ========================================== member
     // create
-    public func checkDuplication(with: String, fieldName: String) -> Bool { // 회원가입 뷰 변경해야 함(아이디, 닉네임 중복 확인 버튼 추가)
-        var result = false
-        
+    public func checkDuplication(with: String, fieldName: String) {
         let query = db.collection(K.DB.collectionName).whereField(fieldName, isEqualTo: with)
         query.getDocuments { qs, error in
             if let error = error {
@@ -170,15 +172,13 @@ final class FirestoreManager {
                 // success
                 if qs!.documents.isEmpty {
                     print("데이터 중복 X")
-                    result = true
-                
+                    self.memberSingUpDelegate?.ableToProceedSignUp(fieldName)
                 } else {
                     print("데이터 중복!")
+                    self.memberSingUpDelegate?.disableToProceedSignUp(fieldName)
                 }
             }
         }
-        
-        return result
     }
 
     public func createMember(_ newMember: Member) {
@@ -194,7 +194,7 @@ final class FirestoreManager {
             } else {
                 // success
                 print("\(newMember.memberID) added")
-                self.memberDelegate?.signUpSuccessed()
+                self.memberSingUpDelegate?.signUpSuccessed()
             }
         }
     }

@@ -23,8 +23,8 @@ class SignUpViewController: UIViewController {
     // MARK: - Property
     var fStoreManager = FirestoreManager.shared
     
-    var idDuplication = false
-    var nickDuplication = false
+    var idDuplCheck = false
+    var nickDuplCheck = false
     
 
     // MARK: - UI Components
@@ -81,6 +81,18 @@ class SignUpViewController: UIViewController {
         btn.layer.masksToBounds = true
         btn.layer.cornerRadius = 7
         btn.addTarget(self, action: #selector(idDuplCheckBtnTapped), for: .touchUpInside)
+        return btn
+    }()
+    
+    private let nickDuplCheckBtn: UIButton = {
+        let btn = UIButton()
+        btn.setTitle("중복 확인", for: .normal)
+        btn.setTitleColor(.systemBackground, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .bold)
+        btn.backgroundColor = .btnColor
+        btn.layer.masksToBounds = true
+        btn.layer.cornerRadius = 7
+        btn.addTarget(self, action: #selector(nickDuplCheckBtnTapped), for: .touchUpInside)
         return btn
     }()
     
@@ -181,13 +193,13 @@ class SignUpViewController: UIViewController {
     @objc private func joinBtnTapped() {
         print("joinBtnTapped")
         // 유효성 체크 ⭐️
-        if !idDuplication {
+        if !idDuplCheck {
             let alert = UIAlertController(title: "아이디 중복 확인 필요", message: "입력하신 아이디의 중복 확인을 해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             self.present(alert, animated: true)
         }
         
-        if !nickDuplication {
+        if !nickDuplCheck {
             let alert = UIAlertController(title: "닉네임 중복 확인 필요", message: "입력하신 닉네임의 중복 확인을 해주세요.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             self.present(alert, animated: true)
@@ -195,7 +207,7 @@ class SignUpViewController: UIViewController {
         
         if idTextfield.text != "", pwTextfield.text != "", pwCheckTextfield.text != "",
            nameTextfield.text != "", nickNameTextfield.text != "", emailTextfield.text != "",
-            idDuplication, nickDuplication {
+            idDuplCheck, nickDuplCheck {
             var member = Member(memberID: idTextfield.text!,
                                 memberPW: pwTextfield.text!,
                                 memberName: nameTextfield.text!,
@@ -207,10 +219,15 @@ class SignUpViewController: UIViewController {
     
     @objc private func idDuplCheckBtnTapped() {
         if idTextfield.text != "" {
-            idDuplication = fStoreManager.checkDuplication(with: idTextfield.text!, fieldName: K.DB.MemberField.Id)
+            fStoreManager.checkDuplication(with: idTextfield.text!, fieldName: K.DB.MemberField.Id)
         }
     }
 
+    @objc private func nickDuplCheckBtnTapped() {
+        if nickNameTextfield.text != "" {
+            fStoreManager.checkDuplication(with: nickNameTextfield.text!, fieldName: K.DB.MemberField.Nickname)
+        }
+    }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
         self.view.endEditing(true)
@@ -232,7 +249,7 @@ class SignUpViewController: UIViewController {
         self.view.backgroundColor = .backColor
         self.title = "회원가입"
         
-        fStoreManager.memberDelegate = self
+        fStoreManager.memberSingUpDelegate = self
     }
 
     private func setStackView() {
@@ -241,9 +258,12 @@ class SignUpViewController: UIViewController {
         idUIView.addSubview(idTextfield)
         idUIView.addSubview(idDuplCheckBtn)
         
+        nickUIView.addSubview(nickNameTextfield)
+        nickUIView.addSubview(nickDuplCheckBtn)
+        
         entireStackView.addArrangedSubview(idUIView)
         entireStackView.addArrangedSubview(nameTextfield)
-        entireStackView.addArrangedSubview(nickNameTextfield)
+        entireStackView.addArrangedSubview(nickUIView)
         entireStackView.addArrangedSubview(pwTextfield)
         entireStackView.addArrangedSubview(pwCheckTextfield)
         entireStackView.addArrangedSubview(emailTextfield)
@@ -277,6 +297,25 @@ class SignUpViewController: UIViewController {
             make.height.equalTo(45)
         }
         
+        
+        nickNameTextfield.snp.makeConstraints { make in
+            make.left.equalTo(nickUIView.snp.left).inset(0)
+            make.right.equalTo(nickUIView.snp.right).inset(0)
+            make.height.equalTo(nickUIView.snp.height).inset(0)
+        }
+        
+        nickDuplCheckBtn.snp.makeConstraints { make in
+            make.right.equalTo(nickUIView.snp.right).inset(5)
+            make.centerY.equalTo(nickUIView.snp.centerY)
+            make.width.equalTo(60)
+            make.height.equalTo(34)
+        }
+        
+        nickUIView.snp.makeConstraints { make in
+            make.height.equalTo(45)
+        }
+        
+        
         pwTextfield.snp.makeConstraints { make in
             make.height.equalTo(45)
         }
@@ -286,10 +325,6 @@ class SignUpViewController: UIViewController {
         }
         
         nameTextfield.snp.makeConstraints { make in
-            make.height.equalTo(45)
-        }
-        
-        nickNameTextfield.snp.makeConstraints { make in
             make.height.equalTo(45)
         }
         
@@ -309,15 +344,40 @@ class SignUpViewController: UIViewController {
 
 
 // MARK: - FirestoreManagerDelegate
-extension SignUpViewController: FirestoreManagerMemberDelegate {
+extension SignUpViewController: FirestoreManagerMemberSingUpDelegate {
+    
+    func ableToProceedSignUp(_ fieldName: String) {
+        var fName = ""
+        if fieldName == K.DB.MemberField.Id {
+            fName = "아이디"
+            self.idDuplCheck = true
+        } else {
+            fName = "닉네임"
+            self.nickDuplCheck = true
+        }
+        
+        let alert = UIAlertController(title: "\(fName) 중복 확인", message: "입력하신 \(fName) '\(idTextfield.text!)'는 사용 가능한 \(fName)입니다.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        self.present(alert, animated: true)
+    }
+    
+    func disableToProceedSignUp(_ fieldName: String) {
+        var fName = "닉네임"
+        if fieldName == K.DB.MemberField.Id {
+            fName = "아이디"
+        }
+        
+        let alert = UIAlertController(title: "\(fName) 중복 확인", message: "입력하신 \(fName) '\(idTextfield.text!)'는 사용 중인 \(fName)입니다.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        self.present(alert, animated: true)
+    }
+    
     
     func signUpSuccessed() {
         let sheet = UIAlertController(title: "회원가입 성공", message: "회원가입에 성공했습니다. 로그인 화면으로 돌아갑니다.", preferredStyle: .alert)
         sheet.addAction(UIAlertAction(title: "확인", style: .default, handler: { UIAlertAction in
             self.navigationController?.popToRootViewController(animated: true)
         }))
-//        let sheet = UIAlertController(title: "회원가입 성공", message: "회원가입에 성공했습니다. 가입한 계정으로 로그인해주세요. ", preferredStyle: .alert)
-//        sheet.addAction(UIAlertAction(title: "확인", style: .default))
         present(sheet, animated: true)
     }
     
