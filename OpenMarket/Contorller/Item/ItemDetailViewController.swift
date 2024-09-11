@@ -31,6 +31,7 @@ class ItemDetailViewController: UIViewController {
         }
     }
     var images: [UIImage]?
+    var itemFromCreateItemVC: Item? // 업데이트한 아이템 정보 받기 위한 변수
     
     var fStoreManager = FirestoreManager.shared
     
@@ -119,13 +120,14 @@ class ItemDetailViewController: UIViewController {
             let vc = CreateItemViewController()
             vc.modalPresentationStyle = .fullScreen
             vc.item = self.item
-            // 작성된 글 정보 전달!!
+            vc.naviStack = self.navigationController?.viewControllers
+            print(self.navigationController?.viewControllers)
+            
             self.present(vc, animated: true)
         }))
         actionSheet.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { UIAlertAction in
             self.fStoreManager.deleteItem(with: self.item!)
-            // self.dismiss(animated: true) 이게 아니라 이전 화면으로 돌아가야 함,,!!!
-            // 네비게이션 컨트롤러 이전 화면으로 넘어가는 방법 찾아보기
+            self.navigationController?.popViewController(animated: true) // 이전 화면으로
             
         }))
         actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
@@ -133,6 +135,13 @@ class ItemDetailViewController: UIViewController {
         self.present(actionSheet, animated: true)
     }
 
+    
+    // MARK: - viewWillAppear
+    override func viewWillAppear(_ animated: Bool) {
+        if let item = itemFromCreateItemVC {
+            self.item = item
+        }
+    }
     
     
     // MARK: - viewDidLoad
@@ -145,6 +154,7 @@ class ItemDetailViewController: UIViewController {
         setImageSlider(images)
         setUIBarButtonItem()
     }
+    
     
     
     // MARK: - private

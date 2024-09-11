@@ -25,11 +25,8 @@ struct CreateItemViewController_Preview: PreviewProvider {
 class CreateItemViewController: UIViewController {
 
     // MARK: - Property
-    var item: Item? {
-        didSet {
-            //vcTitleLabel.text = test
-        }
-    }
+    var item: Item?
+    var naviStack: [UIViewController]?
     
     private var uploadedImageCnt: Int = 0
     private var images: [UIImage] = [] // 선택된 이미지를 담을 배열
@@ -215,7 +212,6 @@ class CreateItemViewController: UIViewController {
             print("new post => \(newItem)")
         }
         
-        
     }
 
     @objc private func closeBtnTapped() {
@@ -339,6 +335,7 @@ class CreateItemViewController: UIViewController {
         imageShooter.delegate = self
         
         fStoreManager.updateItemDelegate = self
+        fStoreManager.uploadItemDelegate = self
     }
     
     private func setAddSubview() {
@@ -493,18 +490,26 @@ extension CreateItemViewController: UICollectionViewDataSource {
 }
 
 
-// MARK: - FirestoreManagerCreateItemDelegate
+// MARK: - FirestoreManagerItemUpdateDelegate
 extension CreateItemViewController: FirestoreManagerItemUpdateDelegate {
     
     func updateItemSuccessed(_ updatedItem: Item) {
-//        let vc = ItemDetailViewController()
-//        vc.item = updatedItem
-//        
-//        navigationController?.pushViewController(vc, animated: true)
+        // 이전 화면으로 데이터 넘기기
+        let endIndex = naviStack!.endIndex
+        let prevVC = naviStack![endIndex-1] as! ItemDetailViewController
+        prevVC.itemFromCreateItemVC = updatedItem
         
-        // 이전 화면으로 데이터 넘기는 방법 찾아보기
-        
-        self.dismiss(animated: true)
+        self.presentingViewController?.dismiss(animated: true)
     }
     
 }
+
+// MARK: - FirestoreManagerUploadItemDelegate
+extension CreateItemViewController: FirestoreManagerUploadItemDelegate {
+    
+    func uploadItemSuccessed() {
+        self.presentingViewController?.dismiss(animated: true)
+    }
+    
+}
+
