@@ -494,6 +494,9 @@ extension CreateItemViewController: UICollectionViewDataSource {
 extension CreateItemViewController: FirestoreManagerItemUpdateDelegate {
     
     func updateItemSuccessed(_ updatedItem: Item) {
+        
+        print("CreateItemViewController: updateItemSuccessed")
+        
         // 이전 화면으로 데이터 넘기기
         let endIndex = naviStack!.endIndex
         let prevVC = naviStack![endIndex-1] as! ItemDetailViewController
@@ -508,6 +511,9 @@ extension CreateItemViewController: FirestoreManagerItemUpdateDelegate {
 extension CreateItemViewController: FirestoreManagerUploadItemDelegate {
     
     func uploadItemSuccessed() {
+        
+        print("CreateItemViewController: uploadItemSuccessed")
+        
         self.presentingViewController?.dismiss(animated: true)
     }
     

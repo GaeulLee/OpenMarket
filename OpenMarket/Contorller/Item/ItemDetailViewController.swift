@@ -58,9 +58,9 @@ class ItemDetailViewController: UIViewController {
     private let imagePageControl: UIPageControl = {
         let pc = UIPageControl()
         pc.currentPage = 0
-        pc.pageIndicatorTintColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.5)
-        pc.currentPageIndicatorTintColor = .white
         pc.hidesForSinglePage = true
+        pc.pageIndicatorTintColor = .systemGray
+        pc.currentPageIndicatorTintColor = .white
         return pc
     }()
     private let imageNumberLabel: UILabel = {
@@ -120,7 +120,7 @@ class ItemDetailViewController: UIViewController {
             let vc = CreateItemViewController()
             vc.modalPresentationStyle = .fullScreen
             vc.item = self.item
-            vc.naviStack = self.navigationController?.viewControllers
+            vc.naviStack = self.navigationController?.viewControllers // ⭐️
             print(self.navigationController?.viewControllers)
             
             self.present(vc, animated: true)
@@ -140,6 +140,15 @@ class ItemDetailViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         if let item = itemFromCreateItemVC {
             self.item = item
+            print(item)
+            /*
+             상품 정보를 수정했을 때, 이미지만 변경이 안되는 점 발견 ⭐️
+             확인해보니, 데이터는 문제없이 수정된 데이터로 잘 넘어옴
+             예상되는 원인은 데이터가 이미지일 경우 로드되는 속도가 느려서일 것이라 의심됨
+             비동기로 이미지 로드하도록 수정해보자
+             아니 근데 이미지 로드되는 속도 느린거는 이해되는데 데이터 자체는 잘 넘어온거면 이미지 배열 길이는 변경되어야하는거 아냐..?
+            
+            */
         }
     }
     
@@ -178,16 +187,17 @@ class ItemDetailViewController: UIViewController {
             imageView.image = imgs[index]
             imageView.contentMode = .scaleAspectFill
 
-            let xPosition = (self.view.frame.width - 20) * CGFloat(index)
+            let xPosition = (self.view.frame.width - 14) * CGFloat(index)
             print(xPosition)
             imageView.frame = CGRect(x: xPosition,
                                      y: 0,
-                                     width: (self.view.frame.width - 10),
-                                     height: (self.view.frame.width - 100))
+                                     width: (self.view.frame.width - 14),
+                                     height: (self.view.frame.width - 14))
 
-            imageScrollView.contentSize.width = (self.view.frame.width - 20) * CGFloat(index+1)
+            
             imageScrollView.addSubview(imageView)
         }
+        imageScrollView.contentSize.width = (self.view.frame.width - 14) * CGFloat(imgs.count)
     }
     
     private func setAddSubview() {
@@ -210,21 +220,20 @@ class ItemDetailViewController: UIViewController {
         }
 
         imageScrollView.snp.makeConstraints {
-            $0.height.equalTo(300)
+            $0.width.height.equalTo(scrollView.snp.width)
             $0.top.equalTo(scrollView.snp.top)
-            $0.width.equalTo(scrollView.snp.width)
         }
         
         imagePageControl.snp.makeConstraints {
             $0.centerX.equalTo(self.view)
             $0.top.equalTo(imageScrollView.snp.bottom).inset(20)
             $0.height.equalTo(10)
-            $0.width.equalTo(40)
+            $0.width.equalTo(scrollView.snp.width)
         }
         
         imageNumberLabel.snp.makeConstraints {
-            $0.top.equalTo(scrollView.snp.top).inset(15)
-            $0.right.equalTo(scrollView.snp.right).inset(15)
+            $0.top.equalTo(scrollView.snp.top).inset(12)
+            $0.right.equalTo(scrollView.snp.right).inset(10)
             $0.width.equalTo(50)
             $0.height.equalTo(30)
         }
