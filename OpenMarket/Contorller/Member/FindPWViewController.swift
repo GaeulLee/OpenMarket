@@ -27,7 +27,7 @@ class FindPWViewController: UIViewController {
     // MARK: - UI Components
     private let nameTextfield: UITextField = {
         let tf = UITextField()
-        tf.attributedPlaceholder = NSAttributedString(string: "Enter Name", attributes: [.foregroundColor: UIColor.lightGray])
+        tf.attributedPlaceholder = NSAttributedString(string: "이름 입력", attributes: [.foregroundColor: UIColor.lightGray])
         tf.font = .systemFont(ofSize: 16, weight: .regular)
         tf.borderStyle = .roundedRect
         tf.backgroundColor = .clear
@@ -44,7 +44,7 @@ class FindPWViewController: UIViewController {
     
     private let idTextfield: UITextField = {
         let tf = UITextField()
-        tf.attributedPlaceholder = NSAttributedString(string: "Enter ID", attributes: [.foregroundColor: UIColor.lightGray])
+        tf.attributedPlaceholder = NSAttributedString(string: "아이디 입력", attributes: [.foregroundColor: UIColor.lightGray])
         tf.font = .systemFont(ofSize: 16, weight: .regular)
         tf.borderStyle = .roundedRect
         tf.backgroundColor = .clear
@@ -61,7 +61,7 @@ class FindPWViewController: UIViewController {
     
     private let emailTextfield: UITextField = {
         let tf = UITextField()
-        tf.attributedPlaceholder = NSAttributedString(string: "Enter Email", attributes: [.foregroundColor: UIColor.lightGray])
+        tf.attributedPlaceholder = NSAttributedString(string: "이메일 입력", attributes: [.foregroundColor: UIColor.lightGray])
         tf.font = .systemFont(ofSize: 16, weight: .regular)
         tf.borderStyle = .roundedRect
         tf.backgroundColor = .clear
@@ -108,7 +108,6 @@ class FindPWViewController: UIViewController {
     }
     
     
-    
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -116,7 +115,37 @@ class FindPWViewController: UIViewController {
         setUI()
         setStackView()
         setConstraints()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
+    
+    
+    // MARK: - Nonitificatoin
+    @objc private func keyboardWillShow(notification: Notification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            findBtn.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardSize.height - 20)
+            }
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    @objc private func keyboardWillHide(notification: Notification) {
+        findBtn.snp.updateConstraints { make in
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(0)
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
         self.view.endEditing(true)

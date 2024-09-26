@@ -298,8 +298,50 @@ class CreateItemViewController: UIViewController {
         setConstraints()
         
         setData()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
+    
+    // MARK: - Nonitificatoin
+    @objc private func keyboardWillShow(notification: Notification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            // 20 증감 이유
+            // entireStackView와 createItemBtn의 constraint 기준이 다르기 때문에 UI상 적절해 보이는 수치로 조절하기 위함
+            entireStackView.snp.updateConstraints {
+                $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(50 + keyboardSize.height - 20)
+            }
+            descriptionTextView.snp.updateConstraints {
+                $0.height.equalTo(400 - keyboardSize.height + 20)
+            }
+            createItemBtn.snp.updateConstraints {
+                $0.bottom.equalTo(self.view.snp.bottom).inset(40 + keyboardSize.height - 20)
+            }
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    @objc private func keyboardWillHide(notification: Notification) {
+        entireStackView.snp.updateConstraints {
+            $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(50)
+        }
+        descriptionTextView.snp.updateConstraints {
+            $0.height.equalTo(400)
+        }
+        createItemBtn.snp.updateConstraints {
+            $0.bottom.equalTo(self.view.snp.bottom).inset(40)
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
     
     // MARK: - private
     private func setData() {
@@ -376,7 +418,7 @@ class CreateItemViewController: UIViewController {
             $0.right.equalTo(self.view.safeAreaLayoutGuide.snp.right)
         }
         
-        
+
         topView.snp.makeConstraints {
             $0.top.equalTo(entireStackView.snp.top)
             $0.width.equalTo(entireStackView.snp.width).inset(10)

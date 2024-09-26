@@ -232,7 +232,7 @@ class SignUpViewController: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
         self.view.endEditing(true)
     }
-    
+
     
     // MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -241,6 +241,35 @@ class SignUpViewController: UIViewController {
         setUI()
         setStackView()
         setConstraints()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    
+    // MARK: - Nonitificatoin
+    @objc private func keyboardWillShow(notification: Notification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            joinBtn.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardSize.height - 20)
+            }
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    @objc private func keyboardWillHide(notification: Notification) {
+        joinBtn.snp.updateConstraints { make in
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(0)
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     
@@ -267,8 +296,6 @@ class SignUpViewController: UIViewController {
         entireStackView.addArrangedSubview(pwTextfield)
         entireStackView.addArrangedSubview(pwCheckTextfield)
         entireStackView.addArrangedSubview(emailTextfield)
-
-
         
         self.view.addSubview(joinBtn)
     }

@@ -21,7 +21,7 @@ class ModifyPWViewController: UIViewController {
     // MARK: - UI Components
     private let pwTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "Enter Password"
+        tf.placeholder = "비밀번호 입력"
         tf.borderStyle = .roundedRect
         tf.backgroundColor = .tfColor
         tf.textColor = .lightGray
@@ -35,7 +35,7 @@ class ModifyPWViewController: UIViewController {
     
     private let pwCheckTextfield: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "Check Password"
+        tf.placeholder = "비밀번호 확인"
         tf.borderStyle = .roundedRect
         tf.backgroundColor = .tfColor
         tf.textColor = .lightGray
@@ -84,6 +84,34 @@ class ModifyPWViewController: UIViewController {
         setUI()
         setStackView()
         setConstraints()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    // MARK: - Nonitificatoin
+    @objc private func keyboardWillShow(notification: Notification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            modifyBtn.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardSize.height - 20)
+            }
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    @objc private func keyboardWillHide(notification: Notification) {
+        modifyBtn.snp.updateConstraints { make in
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(0)
+        }
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
