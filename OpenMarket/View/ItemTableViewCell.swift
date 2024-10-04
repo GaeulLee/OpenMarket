@@ -13,9 +13,9 @@ class ItemTableViewCell: UITableViewCell {
     // MARK: - property
     public var item: Item? {
         didSet {
-            INameLabel.text = item?.itemName
+            iNameLabel.text = item?.itemName
             priceLabel.text = item?.itemPrice
-            iImageView.image = UIImage(data: item!.itemImage[0])
+            iImageView.image = item?.itemImage[0] // 배열의 첫번째 사진으로 고정
         }
     }
 
@@ -33,7 +33,7 @@ class ItemTableViewCell: UITableViewCell {
         return imageView
     }()
     
-    private let INameLabel: UILabel = {
+    private let iNameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
         label.textColor = .defaultFontColor
@@ -76,7 +76,7 @@ class ItemTableViewCell: UITableViewCell {
     
     // MARK: - private
     private func setAddSubview() {
-        labelUIView.addSubview(INameLabel)
+        labelUIView.addSubview(iNameLabel)
         labelUIView.addSubview(priceLabel)
         
         stackView.addArrangedSubview(iImageView)
@@ -87,7 +87,7 @@ class ItemTableViewCell: UITableViewCell {
     }
     
     private func setConstraints() {
-        INameLabel.snp.makeConstraints {
+        iNameLabel.snp.makeConstraints {
             $0.top.equalTo(labelUIView.snp.top).inset(3)
         }
         

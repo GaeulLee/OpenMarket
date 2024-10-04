@@ -5,7 +5,7 @@
 //  Created by 이가을 on 7/24/24.
 //
 
-import Foundation
+import UIKit
 
 struct Item {
     let itemName: String
@@ -13,5 +13,5 @@ struct Item {
     let description: String
     let date: String
     let memberID: String
-    let itemImage: [Data]
+    let itemImage: [UIImage]
 }

@@ -10,6 +10,7 @@ target 'OpenMarket' do
   pod 'GoogleUtilities', :modular_headers => true
 
   pod 'FirebaseFirestore', :modular_headers => true
+  pod 'FirebaseStorage', :modular_headers => true
 
   use_frameworks! :linkage => :static
 end

@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseStorage
 
 protocol FirestoreManagerLoginDelegate {
     func loginSuccessed(_ loggedInMember: Member)
@@ -199,11 +200,6 @@ final class FirestoreManager {
         }
     }
     
-    // read
-    public func readMember() -> [Member]? {
-        return nil
-    }
-    
     // update
     public func updateMemberNickname(with memberID: String, to memberNickname: String) {
         db.collection(K.DB.collectionName).document(memberID)
@@ -232,12 +228,7 @@ final class FirestoreManager {
     
     // delete
     public func deleteMember(with memberID: String) {
-        do {
-            let db = try db.collection(K.DB.collectionName).document(memberID).delete()
-            print("\(memberID) deleted")
-        } catch {
-            print("\(memberID) delete failed")
-        }
+        db.collection(K.DB.collectionName).document(memberID).delete()
     }
     
     // ========================================== item
@@ -245,21 +236,29 @@ final class FirestoreManager {
     public func createItem(newItem: Item) {
         let itemDocName = "\(newItem.itemName)\(newItem.date)"
         print(itemDocName)
-        db.collection(K.DB.collectionName).document(newItem.memberID)
-            .collection(K.DB.subCollectionName).document(itemDocName)
-            .setData([K.DB.ItemField.Name: newItem.itemName,
-                       K.DB.ItemField.Price: newItem.itemPrice,
-                       K.DB.ItemField.Desc: newItem.description,
-                       K.DB.ItemField.Date: newItem.date,
-                       K.DB.ItemField.MemberID: newItem.memberID,
-                       K.DB.ItemField.Image: newItem.itemImage]) { error in
-            if let error = error {
-                print(error.localizedDescription)
-            } else {
-                self.uploadItemDelegate?.uploadItemSuccessed()
-                print("\(newItem.itemName) added")
+        
+        FirebaseStorageManager.uploadImage(images: newItem.itemImage) { urlArr in
+            if urlArr.count == 0 { return }
+            print("FirebaseStorageManager.uploadImage: URLArr -> \(urlArr)")
+            
+            // upload Item to the FireStore
+            self.db.collection(K.DB.collectionName).document(newItem.memberID)
+                .collection(K.DB.subCollectionName).document(itemDocName)
+                .setData([K.DB.ItemField.Name: newItem.itemName,
+                          K.DB.ItemField.Price: newItem.itemPrice,
+                          K.DB.ItemField.Desc: newItem.description,
+                          K.DB.ItemField.Date: newItem.date,
+                          K.DB.ItemField.MemberID: newItem.memberID,
+                          K.DB.ItemField.ImageURL: urlArr]) { error in
+                if let error = error {
+                    print(error.localizedDescription)
+                } else {
+                    self.uploadItemDelegate?.uploadItemSuccessed()
+                    print("\(newItem.itemName) added")
+                }
             }
         }
+
     }
     
     // read
@@ -278,14 +277,19 @@ final class FirestoreManager {
                            let desc = data[K.DB.ItemField.Desc] as? String,
                            let date = data[K.DB.ItemField.Date] as? String,
                            let ID = data[K.DB.ItemField.MemberID] as? String,
-                           let images = data[K.DB.ItemField.Image] as? [Data] {
-                            let item = Item(itemName: name, itemPrice: price, description: desc, date: date, memberID: ID, itemImage: images)
-                            items.append(item)
+                           let imageURL = data[K.DB.ItemField.ImageURL] as? [String] {
+                            // load images from the Strage with URL
+                            FirebaseStorageManager.downloadImage(urls: imageURL) { imageArr in
+                                if imageArr.count == 0 { return }
+                                print("FirebaseStorageManager.downloadImage: imgArr -> \(imageArr)")
+                                let item = Item(itemName: name, itemPrice: price, description: desc, date: date, memberID: ID, itemImage: imageArr)
+                                items.append(item)
+                                self.itemDelegate?.readAllItemSuccessed(items)
+                            }
                         }
                     }
-                    self.itemDelegate?.readAllItemSuccessed(items)
                 } else {
-                    print("read items faild")
+                    print("No datas")
                 }
             }
         }
@@ -309,14 +313,19 @@ final class FirestoreManager {
                            let desc = data[K.DB.ItemField.Desc] as? String,
                            let date = data[K.DB.ItemField.Date] as? String,
                            let ID = data[K.DB.ItemField.MemberID] as? String,
-                           let images = data[K.DB.ItemField.Image] as? [Data] {
-                            let item = Item(itemName: name, itemPrice: price, description: desc, date: date, memberID: ID, itemImage: images)
-                            items.append(item)
+                           let imageURL = data[K.DB.ItemField.ImageURL] as? [String] {
+                            FirebaseStorageManager.downloadImage(urls: imageURL) { imageArr in
+                                if imageArr.count == 0 { return }
+                                print("FirebaseStorageManager.downloadImage: imgArr -> \(imageArr)")
+                                let item = Item(itemName: name, itemPrice: price, description: desc, date: date, memberID: ID, itemImage: imageArr)
+                                items.append(item)
+                                self.itemDelegate?.readOneMembersItemSuccessed(items)
+                            }
                         }
                     }
-                    self.itemDelegate?.readOneMembersItemSuccessed(items)
+                    
                 } else {
-                    print("read items faild")
+                    print("No datas")
                 }
             }
         }
@@ -336,34 +345,42 @@ final class FirestoreManager {
             .collection(K.DB.subCollectionName).document(oldItemDocName).delete()
         print("\(oldItemDocName) deleted")
         
-        // 수정된 데이터로 새롭게 생성
-        db.collection(K.DB.collectionName).document(modifiedItem.memberID)
-            .collection(K.DB.subCollectionName).document(newItemDocName)
-            .setData([K.DB.ItemField.Name: modifiedItem.itemName,
-                       K.DB.ItemField.Price: modifiedItem.itemPrice,
-                       K.DB.ItemField.Desc: modifiedItem.description,
-                       K.DB.ItemField.Date: modifiedItem.date,
-                       K.DB.ItemField.MemberID: modifiedItem.memberID,
-                       K.DB.ItemField.Image: modifiedItem.itemImage]) { error in
-            if let error = error {
-                print(error.localizedDescription)
-            } else {
-                self.updateItemDelegate?.updateItemSuccessed(modifiedItem)
-                print("\(modifiedItem.itemName) modified")
+        // delete images from the Storage
+        
+    
+        FirebaseStorageManager.uploadImage(images: modifiedItem.itemImage) { urlArr in
+            if urlArr.count == 0 { return }
+            print("FirebaseStorageManager.uploadImage: URLArr -> \(urlArr)")
+            
+            // 수정된 데이터로 새롭게 생성
+            self.db.collection(K.DB.collectionName).document(modifiedItem.memberID)
+                .collection(K.DB.subCollectionName).document(newItemDocName)
+                .setData([K.DB.ItemField.Name: modifiedItem.itemName,
+                           K.DB.ItemField.Price: modifiedItem.itemPrice,
+                           K.DB.ItemField.Desc: modifiedItem.description,
+                           K.DB.ItemField.Date: modifiedItem.date,
+                           K.DB.ItemField.MemberID: modifiedItem.memberID,
+                          K.DB.ItemField.ImageURL: urlArr]) { error in
+                if let error = error {
+                    print(error.localizedDescription)
+                } else {
+                    self.updateItemDelegate?.updateItemSuccessed(modifiedItem)
+                    print("\(modifiedItem.itemName) modified")
+                }
             }
         }
+        
+
     }
     
     // delete
     public func deleteItem(with item: Item) {
-        do {
-            let itemDocName = "\(item.itemName)\(item.date)"
-            let db = try db.collection(K.DB.collectionName).document(item.memberID)
-                .collection(K.DB.subCollectionName).document(itemDocName).delete()
-            print("\(item.itemName) deleted")
-        } catch {
-            print("\(item.itemName) delete failed")
-        }
+        // delete images from the Storage
+
+        let itemDocName = "\(item.itemName)\(item.date)"
+        db.collection(K.DB.collectionName).document(item.memberID)
+            .collection(K.DB.subCollectionName).document(itemDocName).delete()
+        print("\(item.itemName) deleted")
     }
 
 }

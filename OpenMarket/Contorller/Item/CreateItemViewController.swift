@@ -190,24 +190,24 @@ class CreateItemViewController: UIViewController {
             return
         }
         
-        if let item = self.item {
+        if let item = self.item { // 전역변수 item이 nil이 아니면 업데이트 화면이니 업데이트 진행
             var modifiedItem = Item(itemName: iNameTextfield.text!,
-                            itemPrice: priceTextfield.text!,
-                            description: descriptionTextView.text!,
-                            date: item.date,
-                            memberID: item.memberID,
-                            itemImage: ETC.convertUIImageToData(images: images))
+                                    itemPrice: priceTextfield.text!,
+                                    description: descriptionTextView.text!,
+                                    date: item.date, // 변경 안되는 필드
+                                    memberID: item.memberID, // 변경 안되는 필드
+                                    itemImage: images)
             fStoreManager.updateItem(modifiedItem: modifiedItem, prevItemName: item.itemName)
             print("modified post => \(modifiedItem)")
 
-        } else {
+        } else { // item이 nil이면 새로 생성화면임
             let id = fStoreManager.getMemberInfo().memberID
             var newItem = Item(itemName: iNameTextfield.text!,
-                            itemPrice: priceTextfield.text!,
-                            description: descriptionTextView.text!,
-                            date: ETC.formatDateToString(date: Date()),
-                            memberID: id,
-                            itemImage: ETC.convertUIImageToData(images: images))
+                               itemPrice: priceTextfield.text!,
+                               description: descriptionTextView.text!,
+                               date: ETC.formatDateToString(date: Date()),
+                               memberID: id,
+                               itemImage: images)
             fStoreManager.createItem(newItem: newItem)
             print("new post => \(newItem)")
         }
@@ -220,9 +220,9 @@ class CreateItemViewController: UIViewController {
 
     @objc private func selectPhotoBtnTapped() {
         if self.images.count > 4 { 
-            let alert = UIAlertController(title: "알림", message: "업로드 가능한 이미지 갯수를 초과했습니다.", preferredStyle: .alert) // alert(set title, message, style)
-            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil) // make button and event
-            alert.addAction(confirm) // add to alert
+            let alert = UIAlertController(title: "알림", message: "업로드 가능한 이미지 갯수를 초과했습니다.", preferredStyle: .alert)
+            let confirm = UIAlertAction(title: "확인", style: .default, handler: nil)
+            alert.addAction(confirm)
             present(alert, animated: true, completion: nil)
             return
         }
@@ -235,7 +235,6 @@ class CreateItemViewController: UIViewController {
         // 사진 촬영, 사진 선택 중 업로드 방식 action sheet로 물어보기
         let actionSheet = UIAlertController()
         actionSheet.addAction(UIAlertAction(title: "사진 촬영", style: .default, handler: { UIAlertAction in
-            // UIImagePickerController
             self.imageShooter.sourceType = .camera
             self.present(self.imageShooter, animated: true)
         }))
@@ -259,13 +258,13 @@ class CreateItemViewController: UIViewController {
                     var thumbnail = UIImage()
                     
                     imageManager.requestImage(for: assets[i],
-                                              targetSize: CGSize(width: 100, height: 2100),
+                                              targetSize: CGSize(width: 200, height: 200),
                                               contentMode: .aspectFit,
                                               options: option) { (result, info) in
                         thumbnail = result!
                     }
                     
-                    let data = thumbnail.jpegData(compressionQuality: 0.7)
+                    let data = thumbnail.jpegData(compressionQuality: 1.0)
                     let newImage = UIImage(data: data!)
                     
                     self.images.append(newImage! as UIImage)
@@ -346,13 +345,14 @@ class CreateItemViewController: UIViewController {
     // MARK: - private
     private func setData() {
         if let item = self.item {
+            // itemDetailVC에서 수정 버튼을 통해 이 VC에 들어오면 기존 상품 정보(item)를 전역변수 item에 받아옴
             vcTitleLabel.text = "게시물 수정"
             createItemBtn.setTitle("수정 완료", for: .normal)
             
             iNameTextfield.text = item.itemName
             priceTextfield.text = item.itemPrice
             descriptionTextView.text = item.description
-            self.images = ETC.convertDataToUIImage(datas: item.itemImage)
+            self.images = item.itemImage
             
             DispatchQueue.main.async {
                 self.descriptionTextView.textColor = .defaultFontColor
@@ -489,18 +489,18 @@ extension CreateItemViewController: UITextViewDelegate {
 // MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
 extension CreateItemViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            self.images.append(image)
-            
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-                self.selectPhotoBtn.setTitle("\(self.images.count)/5", for: .normal)
-            }
-            
-            picker.dismiss(animated: true, completion: nil)
-        }
-    }
+//    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+//        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+//            self.images.append(image)
+//            
+//            DispatchQueue.main.async {
+//                self.collectionView.reloadData()
+//                self.selectPhotoBtn.setTitle("\(self.images.count)/5", for: .normal)
+//            }
+//            
+//            picker.dismiss(animated: true, completion: nil)
+//        }
+//    }
     
 }
 
@@ -517,7 +517,7 @@ extension CreateItemViewController: UICollectionViewDataSource {
             fatalError("Failed to load cell!")
         }
         cell.setupCell(img: self.images[indexPath.row])
-        cell.btnEvent = {
+        cell.btnEvent = { // ⭐️
             print("\(indexPath.row)th image")
             self.images.remove(at: indexPath.row)
             
@@ -542,7 +542,8 @@ extension CreateItemViewController: FirestoreManagerItemUpdateDelegate {
         // 이전 화면으로 데이터 넘기기
         let endIndex = naviStack!.endIndex
         let prevVC = naviStack![endIndex-1] as! ItemDetailViewController
-        prevVC.itemFromCreateItemVC = updatedItem
+        prevVC.item = updatedItem
+        print("\(#function) updatedItem -> \(updatedItem)")
         
         self.presentingViewController?.dismiss(animated: true)
     }
@@ -553,9 +554,7 @@ extension CreateItemViewController: FirestoreManagerItemUpdateDelegate {
 extension CreateItemViewController: FirestoreManagerUploadItemDelegate {
     
     func uploadItemSuccessed() {
-        
         print("CreateItemViewController: uploadItemSuccessed")
-        
         self.presentingViewController?.dismiss(animated: true)
     }
     

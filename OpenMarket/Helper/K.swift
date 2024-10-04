@@ -31,7 +31,7 @@ struct K {
             static let Desc = "description"
             static let Date = "date"
             static let MemberID = "memberID"
-            static let Image = "itemImage"
+            static let ImageURL = "itemImageURL"
         }
     }
 }

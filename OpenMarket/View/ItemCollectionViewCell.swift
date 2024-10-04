@@ -49,7 +49,7 @@ class ItemCollectionViewCell: UICollectionViewCell {
         // cell 세팅(데이터,화면 등)
         iNameLabel.text = item.itemName
         priceLabel.text = item.itemPrice
-        iImageView.image = UIImage(data: item.itemImage[0])
+        iImageView.image = item.itemImage[0] // 배열의 첫번째 사진으로 고정
         
         setupLayout()
     }

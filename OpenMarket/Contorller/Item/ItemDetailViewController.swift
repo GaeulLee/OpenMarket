@@ -21,17 +21,9 @@ struct ItemDetailViewController_Preview: PreviewProvider {
 
 class ItemDetailViewController: UIViewController {
     // MARK: - property
-    var item: Item? {
-        didSet {
-            iNameLabel.text = item?.itemName
-            priceLabel.text = item?.itemPrice
-            memberIDLabel.text = item?.memberID
-            descLabel.text = item?.description
-            self.images = ETC.convertDataToUIImage(datas: item!.itemImage)
-        }
-    }
     var images: [UIImage]?
-    var itemFromCreateItemVC: Item? // 업데이트한 아이템 정보 받기 위한 변수
+    //var itemFromCreateItemVC: Item? // 업데이트한 아이템 정보 받기 위한 변수
+    var item: Item?
     
     var fStoreManager = FirestoreManager.shared
     
@@ -49,7 +41,7 @@ class ItemDetailViewController: UIViewController {
     }()
     
     // image slide
-    lazy var imageScrollView: UIScrollView = {
+    private let imageScrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.isPagingEnabled = true
         sv.showsHorizontalScrollIndicator = false
@@ -119,9 +111,8 @@ class ItemDetailViewController: UIViewController {
         actionSheet.addAction(UIAlertAction(title: "수정", style: .default, handler: { UIAlertAction in
             let vc = CreateItemViewController()
             vc.modalPresentationStyle = .fullScreen
-            vc.item = self.item
-            vc.naviStack = self.navigationController?.viewControllers // ⭐️
-            print(self.navigationController?.viewControllers)
+            vc.item = self.item // 아이템 수정 vc에 현재 아이템 데이터 넘기기
+            vc.naviStack = self.navigationController?.viewControllers // ⭐️ 아이템 수정 완료하고 다시 이 vc로 돌아오기 위해 네비게이션 스택에 있는 현재 vc 정보를 넘겨줌
             
             self.present(vc, animated: true)
         }))
@@ -138,15 +129,31 @@ class ItemDetailViewController: UIViewController {
     
     // MARK: - viewWillAppear
     override func viewWillAppear(_ animated: Bool) {
-        if let item = itemFromCreateItemVC {
-            self.item = item
+        if let item = self.item {
             print(item)
+            
+            iNameLabel.text = item.itemName
+            priceLabel.text = item.itemPrice
+            memberIDLabel.text = item.memberID
+            descLabel.text = item.description
+            self.images = item.itemImage
+            print("viewWillAppear self.images -> \(self.images)")
+            
+            for sv in self.imageScrollView.subviews {
+                sv.removeFromSuperview()
+            }
+            
+            setImageSlider(with: self.images)
+            
             /*
              상품 정보를 수정했을 때, 이미지만 변경이 안되는 점 발견 ⭐️
              확인해보니, 데이터는 문제없이 수정된 데이터로 잘 넘어옴
              예상되는 원인은 데이터가 이미지일 경우 로드되는 속도가 느려서일 것이라 의심됨
              비동기로 이미지 로드하도록 수정해보자
              아니 근데 이미지 로드되는 속도 느린거는 이해되는데 데이터 자체는 잘 넘어온거면 이미지 배열 길이는 변경되어야하는거 아냐..?
+             
+             => setImageSlider 함수를 실행해보자.. 이전 vc에서 넘어올 때 didset을 통해 텍스트필드와 텍스트뷰는 변경되지만
+             스크롤뷰는 변경이 안되어서 그런듯 하다.. 24.10.04
             
             */
         }
@@ -160,7 +167,7 @@ class ItemDetailViewController: UIViewController {
         setUI()
         setAddSubview()
         setConstraints()
-        setImageSlider(images)
+        setImageSlider(with: images)
         setUIBarButtonItem()
     }
     
@@ -172,7 +179,7 @@ class ItemDetailViewController: UIViewController {
         self.view.backgroundColor = .backColor
     }
     
-    func setImageSlider(_ images: [UIImage]?) { // scrolliVew에 imageView 추가하는 함수
+    func setImageSlider(with images: [UIImage]?) { // scrolliVew에 imageView 추가하는 함수
         guard let imgs = images else {
             print("기본 이미지로")
             return

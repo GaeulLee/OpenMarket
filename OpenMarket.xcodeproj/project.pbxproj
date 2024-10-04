@@ -32,6 +32,7 @@
 		9B3CF1162C5116DD00629B5D /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1152C5116DD00629B5D /* Item.swift */; };
 		9B3CF1182C6106CE00629B5D /* ItemImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3CF1172C6106CE00629B5D /* ItemImageCollectionViewCell.swift */; };
 		9B3CF11A2C6A13D200629B5D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9B3CF1192C6A13D200629B5D /* GoogleService-Info.plist */; };
+		9B7E3D7A2CAFA339002A5A50 /* FirebaseStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B7E3D792CAFA339002A5A50 /* FirebaseStorageManager.swift */; };
 		C84FBEABF70C68C853C8DAAB /* Pods_OpenMarket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 223961D2AB60054D9819530F /* Pods_OpenMarket.framework */; };
 /* End PBXBuildFile section */
 
@@ -66,6 +67,7 @@
 		9B3CF1152C5116DD00629B5D /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		9B3CF1172C6106CE00629B5D /* ItemImageCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		9B3CF1192C6A13D200629B5D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9B7E3D792CAFA339002A5A50 /* FirebaseStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 				9B3CF1132C5116CF00629B5D /* Member.swift */,
 				9B3CF1152C5116DD00629B5D /* Item.swift */,
 				9B044C702C7363D70074EC2E /* FirestoreManager.swift */,
+				9B7E3D792CAFA339002A5A50 /* FirebaseStorageManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -324,6 +327,7 @@
 				9B3CF1012C3D531A00629B5D /* CreateItemViewController.swift in Sources */,
 				9B3CF1162C5116DD00629B5D /* Item.swift in Sources */,
 				9B044C712C7363D70074EC2E /* FirestoreManager.swift in Sources */,
+				9B7E3D7A2CAFA339002A5A50 /* FirebaseStorageManager.swift in Sources */,
 				9B3CF1032C3D533A00629B5D /* MyPageViewController.swift in Sources */,
 				9B3CF0FF2C3D52EA00629B5D /* ItemDetailViewController.swift in Sources */,
 				9B3CF0DE2C3BFC0F00629B5D /* AppDelegate.swift in Sources */,

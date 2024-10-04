@@ -9,7 +9,7 @@ import UIKit
 
 class ItemImageCollectionViewCell: UICollectionViewCell {
     
-    var btnEvent: (() -> Void) = {}
+    var btnEvent: (() -> Void) = {} // ⭐️
     
     // MARK: - UI elements
     private let pImageView: UIImageView = {
@@ -31,11 +31,11 @@ class ItemImageCollectionViewCell: UICollectionViewCell {
         btn.layer.borderColor = UIColor.black.cgColor
         btn.backgroundColor = .white
         btn.tintColor = .black
-        btn.addTarget(self, action: #selector(didSelectDeleteBtn), for: .touchUpInside)
+        btn.addTarget(self, action: #selector(didSelectDeleteBtn), for: .touchUpInside) // ⭐️
         return btn
     }()
     
-    @objc private func didSelectDeleteBtn() {
+    @objc private func didSelectDeleteBtn() { // ⭐️
         btnEvent()
     }
     
